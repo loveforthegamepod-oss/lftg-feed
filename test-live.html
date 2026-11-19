@@ -585,7 +585,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   <section class="view" id="v-live">
     <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Best bets</a><a class="btn" href="#parlays">Parlays</a><a class="btn" href="#props">Player props</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Model</a><a class="btn primary" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Meter</a><a class="btn" href="#lines">Line movement</a></div>
     <h1>Live betting</h1>
-    <p class="muted small">Type in the score, clock and your book's live line. The index updates its pregame number for the score and time left, starts from the closing line plus 40% of the index's disagreement, adjusts for the score and the time left using patterns from 3,729 games (scores and pace so far don't predict the rest; big leads shrink a little; scoring is back-loaded), and tells you whether the live number is worth it. Momentum by itself isn't a reason to bet: the calls look for spots where the live line has moved further than the game state justifies.</p>
+    <p class="muted small">Type in the score, clock and your book's live line. The index updates its pregame number for the score and time left, starts from the pregame closing line (frozen at kickoff) plus 30% of the index's disagreement on the side and 15% on the total, adjusts for the score, the time left and who has the ball using patterns from 6,400+ games drive by drive (scoring pace so far barely predicts the rest; big leads shrink a little; scoring is back-loaded; totals have a long upper tail, so overs are watch-only), and tells you whether the live number is worth it. Momentum by itself isn't a reason to bet: the calls look for spots where the live line has moved further than the game state justifies.</p>
     <h2 style="margin-top:6px">Live board</h2>
     <div id="lvBoard"></div>
     <h2>Calculator</h2>
@@ -599,7 +599,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
     <h2>Entry plan</h2>
     <div id="lvPlan"></div>
     <h2>Live bet log</h2>
-    <p class="muted small">Every live bet you log is graded from the final score. "Jump in" calls are tracked apart from bets the model didn't call, so we can see whether the calls actually win. The thresholds (58% and 3 pts on sides, 4 pts on totals) are untested starting points.</p>
+    <p class="muted small">Every live bet you log is graded from the final score. "Jump in" calls are tracked apart from bets the model didn't call, so we can see whether the calls actually win. Live model v2 thresholds: 60% and 4 pts on sides and unders; overs are watch-only. Real validation comes from logged live lines.</p>
     <div class="tiles" id="lvTiles"></div>
     <div class="tablebox"><table><thead><tr><th>Wk</th><th>Bet</th><th>Call</th><th class="num">Price</th><th>Result</th></tr></thead><tbody id="lvLog"></tbody></table></div>
     <span class="small muted" id="lvMsg"></span>
