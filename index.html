@@ -373,6 +373,18 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 .lvtab th .tb{width:20px;height:20px;vertical-align:-5px}.lvtab td,.lvtab th{padding:5px 9px}
 .lvcalls{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.lvcall{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04)}
 .lvpl{font-size:13px;padding:2px 0}
+.lvtw{position:relative;display:flex;align-items:stretch;background:color-mix(in srgb,var(--bg,#120a2a) 88%,#000);border-bottom:1px solid rgba(255,255,255,.08)}
+.lvtw[hidden]{display:none}
+.lvtw .lvtick{flex:1;min-width:0;border-bottom:0;background:transparent;cursor:grab;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
+.lvtw.atl .lvtick{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 24px),transparent 100%)}
+.lvtw.atr .lvtick{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 100%);mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 100%)}
+.lvtw.atl.atr .lvtick{-webkit-mask-image:none;mask-image:none}
+.lvtick.drag{cursor:grabbing;user-select:none}.lvtick.drag a{pointer-events:none}
+.lvtick:focus-visible{outline:2px solid #ffd34d;outline-offset:-2px}
+.tkarr{flex:0 0 34px;border:0;background:rgba(255,255,255,.06);color:#fff;font-size:22px;font-weight:700;cursor:pointer;transition:background .2s,opacity .2s}
+.tkarr:hover{background:rgba(255,255,255,.16)}
+.lvtw.atl .tkarr.l,.lvtw.atr .tkarr.r{opacity:.25;pointer-events:none}.lvtw.noscroll .tkarr{display:none}
+.lvtick .tkday{cursor:pointer}.lvtick .tkday:hover{opacity:1}
 .lvtick{display:flex;gap:8px;overflow-x:auto;padding:8px 14px;scrollbar-width:none;background:color-mix(in srgb,var(--bg,#120a2a) 88%,#000);border-bottom:1px solid rgba(255,255,255,.08)}
 .lvtick::-webkit-scrollbar{display:none}
 .lvtick a{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.06);color:inherit;text-decoration:none;font-size:12px;white-space:nowrap;transition:background .2s}
@@ -417,7 +429,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   <a href="#record" data-v="record"><svg viewBox="0 0 24 24"><path d="M4 13l5 5L20 7"/></svg>Record</a>
   <a href="#method" data-v="method"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.5"/></svg>Method</a>
 </nav>
-<div id="lvTicker" class="lvtick" hidden></div>
+<div id="lvTickWrap" class="lvtw" hidden><button type="button" class="tkarr l" aria-label="Scroll games left">‹</button><div id="lvTicker" class="lvtick" tabindex="0" aria-label="This week's games"></div><button type="button" class="tkarr r" aria-label="Scroll games right">›</button></div>
 <main>
   <div id="loadmsg" class="status">Loading the latest model data…</div>
 
@@ -2949,8 +2961,23 @@ function espnFresh(){return ESPNL.u&&Date.now()-ESPNL.u<5*60e3}
 function espnMerge(){if(!espnFresh())return;const E=ESPNL.g;if(!Object.keys(E).length)return;
   if(!LVFEED)LVFEED={g:{}};if(!LVFEED.g)LVFEED.g={};
   for(const id in E){const e=E[id];const F=LVFEED.g[id]||(LVFEED.g[id]={});Object.assign(F,{as:e.as,hs:e.hs,q:e.q,clk:e.clk,half:e.half,done:e.done,rt:1})}}
-let TKFIRST=0;
-function espnTicker(){const el=$("lvTicker");if(!el)return;let G;try{G=games().slice()}catch(e){G=[]}if(!G.length){el.hidden=true;return}
+let TKFIRST=0,TKDRAG=0;
+function tkArrows(){const el=$("lvTicker"),w=$("lvTickWrap");if(!el||!w)return;const max=el.scrollWidth-el.clientWidth;w.classList.toggle("atl",el.scrollLeft<=2);w.classList.toggle("atr",el.scrollLeft>=max-2);w.classList.toggle("noscroll",max<=2)}
+(function tkInit(){const el=$("lvTicker"),w=$("lvTickWrap");if(!el||!w)return;
+  const step=()=>Math.max(200,el.clientWidth*.8);
+  w.querySelector(".tkarr.l").addEventListener("click",()=>el.scrollBy({left:-step(),behavior:"smooth"}));
+  w.querySelector(".tkarr.r").addEventListener("click",()=>el.scrollBy({left:step(),behavior:"smooth"}));
+  el.addEventListener("scroll",tkArrows,{passive:true});window.addEventListener("resize",tkArrows);
+  el.addEventListener("wheel",e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&el.scrollWidth>el.clientWidth){const max=el.scrollWidth-el.clientWidth;if((e.deltaY<0&&el.scrollLeft>0)||(e.deltaY>0&&el.scrollLeft<max)){e.preventDefault();el.scrollLeft+=e.deltaY}}},{passive:false});
+  el.addEventListener("keydown",e=>{if(e.key==="ArrowRight"){e.preventDefault();el.scrollBy({left:240,behavior:"smooth"})}else if(e.key==="ArrowLeft"){e.preventDefault();el.scrollBy({left:-240,behavior:"smooth"})}});
+  let x0=null,s0=0,moved=0;
+  el.addEventListener("pointerdown",e=>{if(e.pointerType!=="mouse"||e.button!==0)return;x0=e.clientX;s0=el.scrollLeft;moved=0});
+  window.addEventListener("pointermove",e=>{if(x0==null)return;const dx=e.clientX-x0;if(Math.abs(dx)>5){moved=1;el.classList.add("drag")}if(moved)el.scrollLeft=s0-dx});
+  window.addEventListener("pointerup",()=>{if(x0==null)return;x0=null;el.classList.remove("drag");if(moved)TKDRAG=Date.now()});
+  el.addEventListener("click",e=>{if(Date.now()-TKDRAG<250){e.preventDefault();e.stopPropagation()}},true);
+  el.addEventListener("click",e=>{const d=e.target.closest(".tkday");if(d)el.scrollTo({left:Math.max(0,d.offsetLeft-el.offsetLeft-8),behavior:"smooth"})});
+})();
+function espnTicker(){const el=$("lvTicker");if(!el)return;let G;try{G=games().slice()}catch(e){G=[]}if(!G.length){$("lvTickWrap").hidden=true;return}
   G.sort((a,b)=>String(a.k).localeCompare(String(b.k)));const fr=espnFresh();let lastD=null,nIn=0,firstLive=null,firstPre=null;
   const day=k=>{const t=Date.parse(k);return isNaN(t)?"TBA":new Date(t).toLocaleDateString("en-US",{timeZone:"America/New_York",weekday:"short"}).toUpperCase()};
   const html=G.map(g=>{const id=String(g.id);const e=fr?ESPNL.g[id]:null;let cls,as,hs,d;
@@ -2962,8 +2989,8 @@ function espnTicker(){const el=$("lvTicker");if(!el)return;let G;try{G=games().s
     const sk=as+"-"+hs;const fl=cls==="in"&&ESPNSC[id]&&ESPNSC[id]!==sk;ESPNSC[id]=sk;const pos=e&&e.sit&&!e.done?e.sit.pos:null;
     const sc=v=>cls==="pre"?"":` <span class="tks">${v}</span>`;
     return lab+`<a href="#" class="${cls}${fl?" flash":""}" data-tkid="${esc(id)}" title="${esc(g.a)} at ${esc(g.h)}">${badge(g.a)}<b>${esc(T(g.a).abbr)}</b>${pos===g.a?'<i class="tkpos" title="has the ball"></i>':""}${sc(as)} <span class="muted">${cls==="pre"?"@":"·"}</span> ${badge(g.h)}<b>${esc(T(g.h).abbr)}</b>${pos===g.h?'<i class="tkpos" title="has the ball"></i>':""}${sc(hs)} <span class="tkd">${esc(d)}</span></a>`}).join("");
-  const sl=el.scrollLeft;el.innerHTML=html;el.hidden=false;
-  if(!TKFIRST){TKFIRST=1;const tgt=firstLive||firstPre;const a=tgt&&el.querySelector(`[data-tkid="${tgt}"]`);if(a){const d=a.previousElementSibling&&a.previousElementSibling.classList.contains("tkday")?a.previousElementSibling:a;el.scrollLeft=Math.max(0,d.offsetLeft-el.offsetLeft-8)}}else el.scrollLeft=sl}
+  const sl=el.scrollLeft;el.innerHTML=html;$("lvTickWrap").hidden=false;
+  if(!TKFIRST){TKFIRST=1;const tgt=firstLive||firstPre;const a=tgt&&el.querySelector(`[data-tkid="${tgt}"]`);if(a){const d=a.previousElementSibling&&a.previousElementSibling.classList.contains("tkday")?a.previousElementSibling:a;el.scrollLeft=Math.max(0,d.offsetLeft-el.offsetLeft-8)}}else el.scrollLeft=sl;tkArrows()}
 let ESPNSIG="";function espnRender(){espnMerge();espnTicker();const sg=Object.entries(ESPNL.g).map(([k,e])=>k+e.as+"-"+e.hs+e.done).join();const chg=sg!==ESPNSIG;ESPNSIG=sg;try{if(chg&&$("v-board")&&$("v-board").classList.contains("on")&&typeof renderBoard==="function")renderBoard();if(chg&&$("v-matchups")&&$("v-matchups").classList.contains("on")&&typeof renderMuList==="function"&&$("muQ")&&document.activeElement!==$("muQ"))renderMuList();}catch(e){}try{if($("v-live")&&$("v-live").classList.contains("on")){renderLiveBoard();lvApplyFeed()}if(location.hash==="#depth"&&typeof renderDepth==="function")renderDepth()}catch(e){}}
 function espnLoop(){const anyLive=Object.values(ESPNL.g).some(e=>!e.done);const soon=allGames().some(g=>{const k=new Date(g.k).getTime();return !g.done&&k-Date.now()<15*60e3&&Date.now()-k<6*36e5});
   espnPoll().then(espnBoxCycle).finally(()=>setTimeout(espnLoop,(anyLive||soon)?30e3:5*60e3))}
