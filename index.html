@@ -585,7 +585,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   <section class="view" id="v-live">
     <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Best bets</a><a class="btn" href="#parlays">Parlays</a><a class="btn" href="#props">Player props</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Model</a><a class="btn primary" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Meter</a><a class="btn" href="#lines">Line movement</a></div>
     <h1>Live betting</h1>
-    <p class="muted small">Type in the score, clock and your book's live line. The index updates its pregame number for the score and time left, starts from the closing line plus 40% of the index's disagreement, adjusts for the score and the time left using patterns from 3,729 games (scores and pace so far don't predict the rest; big leads shrink a little; scoring is back-loaded), and tells you whether the live number is worth it. Momentum by itself isn't a reason to bet: the calls look for spots where the live line has moved further than the game state justifies.</p>
+    <p class="muted small">Type in the score, clock and your book's live line. The index updates its pregame number for the score and time left, starts from the pregame closing line (frozen at kickoff) plus 30% of the index's disagreement on the side and 15% on the total, adjusts for the score, the time left and who has the ball using patterns from 6,400+ games drive by drive (scoring pace so far barely predicts the rest; big leads shrink a little; scoring is back-loaded; totals have a long upper tail, so overs are watch-only), and tells you whether the live number is worth it. Momentum by itself isn't a reason to bet: the calls look for spots where the live line has moved further than the game state justifies.</p>
     <h2 style="margin-top:6px">Live board</h2>
     <div id="lvBoard"></div>
     <h2>Calculator</h2>
@@ -599,7 +599,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
     <h2>Entry plan</h2>
     <div id="lvPlan"></div>
     <h2>Live bet log</h2>
-    <p class="muted small">Every live bet you log is graded from the final score. "Jump in" calls are tracked apart from bets the model didn't call, so we can see whether the calls actually win. The thresholds (58% and 3 pts on sides, 4 pts on totals) are untested starting points.</p>
+    <p class="muted small">Every live bet you log is graded from the final score. "Jump in" calls are tracked apart from bets the model didn't call, so we can see whether the calls actually win. Live model v2 thresholds: 60% and 4 pts on sides and unders; overs are watch-only. Real validation comes from logged live lines.</p>
     <div class="tiles" id="lvTiles"></div>
     <div class="tablebox"><table><thead><tr><th>Wk</th><th>Bet</th><th>Call</th><th class="num">Price</th><th>Result</th></tr></thead><tbody id="lvLog"></tbody></table></div>
     <span class="small muted" id="lvMsg"></span>
@@ -644,7 +644,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   <section class="view" id="v-meter">
     <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Best bets</a><a class="btn" href="#parlays">Parlays</a><a class="btn" href="#props">Player props</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Model</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn primary" href="#meter">Upset Meter</a><a class="btn" href="#lines">Line movement</a></div>
     <div class="mtHead"><h1 id="mtTitle">Upset Alert Meter 🚨</h1><span class="mtFrom" id="mtFrom" hidden></span><span class="mtStat" id="mtStat"></span></div>
-    <p class="muted small">Every game on the board, placed by the underdog's chance to win outright on the LFTG line (50% market + 50% index, σ 15.5). It rebuilds itself from each new week's board. <span class="own">Drag any team block to a different row or a different spot in a row, like a tier list (works with a mouse or a finger). Tapping a block opens a quick tier menu. Your moves and order save for that week only, and the graphic uses your order. </span>Near coin flips land in the top row, since either side can win; a game with no betting line yet is placed on the index line.</p>
+    <p class="muted small">Every game on the board, placed by the underdog's chance to win outright on the LFTG line (50% market + 50% index, σ 15.5; 13 from Week 12 on, when favorites have proven safer). It rebuilds itself from each new week's board. <span class="own">Drag any team block to a different row or a different spot in a row, like a tier list (works with a mouse or a finger). Tapping a block opens a quick tier menu. Your moves and order save for that week only, and the graphic uses your order. </span>Near coin flips land in the top row, since either side can win; a game with no betting line yet is placed on the index line.</p>
     <div class="controls" role="group" aria-label="Meter options"><label class="small" for="mtF">Favorites</label><select id="mtF"><option value="all">All games</option><option value="cfp">CFP Top 25 favorites</option><option value="p4">Power-conference favorites</option></select><label class="small" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="mtDone"> Show finished games</label><button class="btn" id="mtReset" type="button">Reset to the model</button><a class="btn" href="#graphics" id="mtGfx">Make the graphic</a></div>
     <div class="mtBoard" id="mtBoard"></div>
     <div id="mtPop" class="mtPop" hidden></div>
@@ -908,7 +908,7 @@ const MTP4=new Set(["SEC","Big Ten","Big 12","ACC"]);const mtDat=s=>s&&(typeof s
 function mtKey(g){return String(g.id||g.a+"|"+g.h)}
 function mtItem(g){const hasM=g.mkt!=null&&g.mkt!==""&&!isNaN(+g.mkt)&&+g.mkt!==0,hasI=g.model!=null&&g.model!==""&&!isNaN(+g.model);
   if(!hasM&&!hasI){/* no line at all: only possible vs an FCS opponent, which is a lock */const fa=S.teams&&S.teams[g.a],fh=S.teams&&S.teams[g.h];if(!S.teams||!!fa===!!fh)return null;const fav=fa?g.a:g.h;return {g,id:mtKey(g),fav,dog:fav===g.a?g.h:g.a,spread:0,u:.02,auto:MT.length-1,r:null,live:isLive(g),nl:1}}
-  const ln=hasM?+g.mkt:+g.model;const awayFav=ln>0||(ln===0&&hasI&&+g.model>0);const P=hasM&&hasI?0.5*(+g.mkt)+0.5*(+g.model):ln;const fm=awayFav?P:-P;const u=1-nPhi(fm/15.5);
+  const ln=hasM?+g.mkt:+g.model;const awayFav=ln>0||(ln===0&&hasI&&+g.model>0);const P=hasM&&hasI?0.5*(+g.mkt)+0.5*(+g.model):ln;const fm=awayFav?P:-P;const u=1-nPhi(fm/wpSig(g));
   const fav=awayFav?g.a:g.h,dog=awayFav?g.h:g.a;let t=MT.findIndex(x=>u>=x.min);if(t<0)t=MT.length-1;let r=null;const f=g.final;if(g.done&&f&&f.ap!=null&&f.hp!=null){const fp=awayFav?+f.ap:+f.hp,dp=awayFav?+f.hp:+f.ap;r=dp>fp?"U":"H"}
   return {g,id:mtKey(g),fav,dog,spread:Math.abs(ln),u,auto:t,r,live:isLive(g)}}
 function mtTop25(){const L=PLM&&PLM.lists&&PLM.lists.cfp&&PLM.lists.cfp.slots;if(L&&L.filter(Boolean).length>=20)return new Set(L.filter(Boolean));return new Set(((S.ratings&&S.ratings.rows)||[]).slice().sort((a,b)=>a[0]-b[0]).slice(0,25).map(r=>r[1]))}
@@ -1158,8 +1158,9 @@ function snMis(g){const L=[];for(const [on,oi,dn,di] of UN){for(const [o,d,os,ds
 /* v3.0 public projection: 80% opening line + 20% index (most accurate margin forecast in 2021-26); raw index stays for betting edges */
 function projH(g){if(!g)return 0;const L=g.open!=null?+g.open:(g.mkt!=null?+g.mkt:null);const m=+(g.model||0);return L==null||isNaN(L)?m:0.5*L+0.5*m}
 function projFav(g){const p=projH(g);return p>0?g.a:p<0?g.h:(g.model>0?g.a:g.h)}
-function projWP(g){return nPhi(Math.abs(projH(g))/15.5)}
-function snNote(g){const fav=g.model>0?g.a:g.h,ml=Math.abs(g.model),wp=Math.round(100*nPhi(ml/15.5));const mk=g.mkt!=null?(g.mkt>0?g.a:g.h):null,mkl=g.mkt!=null?Math.abs(g.mkt):null;
+function wpSig(g){const M=S.meta||{};if(/post/i.test(M.seasonType||M.st||""))return 13;const w=+((g&&g.wk)||M.week||0);return w>=12?13:15.5}
+function projWP(g){return nPhi(Math.abs(projH(g))/wpSig(g))}
+function snNote(g){const fav=g.model>0?g.a:g.h,ml=Math.abs(g.model),wp=Math.round(100*nPhi(ml/wpSig(g)));const mk=g.mkt!=null?(g.mkt>0?g.a:g.h):null,mkl=g.mkt!=null?Math.abs(g.mkt):null;
   const pa=projOf(g.a),ph=projOf(g.h);const M=snMis(g);const big=M.filter(x=>x.gap>=40).slice(0,2),edgeM=M.filter(x=>x.gap<=-40).slice(0,1);
   const stats=[];stats.push(`Index line: ${fav} by ${snN(ml)}`+(mk?`; market: ${mk} −${snN(mkl)}`:"; no market line yet")+`. Projected winner: ${projFav(g)}, ${Math.round(100*projWP(g))}% to win (market-blended).`);
   for(const x of big)stats.push(`${x.o}'s ${x.on.toLowerCase()} (#${x.or}) vs ${x.d}'s ${x.dn.toLowerCase()} (#${x.dr}): a ${x.gap}-spot gap, the biggest mismatch here.`);
@@ -1251,7 +1252,7 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
   e.preventDefault();e.stopPropagation();goTeam(t)},true);
 /* ---------- matchup dropdowns (every screen) ---------- */
 const MXO=new Set();
-function mxWP(g){const m=g.model!=null?g.model:g.mkt;if(m==null)return null;return nPhi(m/15.5)}
+function mxWP(g){const m=g.model!=null?g.model:g.mkt;if(m==null)return null;return nPhi(m/wpSig(g))}
 function moodMini(t,md,mo){const why=(md.d||[])[0];return `<div class="mxmood" style="--mc:${mo[3]}" title="${esc(t)} fan mood: ${esc(mo[1])} (${md.s}/100)"><span class="mxme">${mo[2]}</span><div class="mxmt"><div><span class="mxk">Fan mood</span> <b style="color:${mo[3]}">${esc(mo[1])}</b> <span class="mxk">${md.s}/100</span></div><div class="mxmbar"><i style="width:${md.s}%"></i></div>${why?`<div class="mxk mxmw">${why[0]>0?"▲":"▼"} ${esc(why[1])}</div>`:""}</div></div>`}
 function moodVs(g){if(typeof moodFor!=="function")return "";const A=moodFor(g.a),H=moodFor(g.h);if(!A&&!H)return "";
   const side=(t,R)=>{if(!R)return `<div class="card mvSide"><div class="mxtn">${badge(t)}<b>${esc(t)}</b></div><div class="mxk">No mood reading yet.</div></div>`;const [_,lab,emo,col]=moodOf(R.s);
@@ -1296,7 +1297,7 @@ function moodMerge(){const C=MOODC.filter(Boolean);if(!C.length){S.mood=null;ret
 function moodFor(t){const M=S.mood&&S.mood.t&&S.mood.t[t];if(!M)return null;const p=projOf(t);let s=M.s,adj=0;const d=(M.d||[]).slice();
   if(p&&p.cfp!=null&&p.cfp>=3){adj=Math.round(10*Math.min(1,p.cfp/60));d.splice(1,0,[1,`Playoff odds: ${pf(p.cfp)}`])}
   else if(p&&p.champ!=null&&p.champ>=15){adj=3;d.splice(1,0,[1,`Conference title odds: ${pf(p.champ)}`])}
-  s=Math.max(2,Math.min(98,s+adj));const g=nextGame(t);let nx=null;if(g&&g.model!=null){const me=g.a===t?g.model:-g.model,wp=Math.round(100*nPhi(me/15.5)),o=g.a===t?g.h:g.a;nx=`Next: ${wp}% to win ${g.a===t?"at":"vs"} ${o}`}
+  s=Math.max(2,Math.min(98,s+adj));const g=nextGame(t);let nx=null;if(g&&g.model!=null){const me=g.a===t?g.model:-g.model,wp=Math.round(100*nPhi(me/wpSig(g))),o=g.a===t?g.h:g.a;nx=`Next: ${wp}% to win ${g.a===t?"at":"vs"} ${o}`}
   return{s,M,d:d.slice(0,5),nx,adj}}
 function moodGauge(s,col){const ang=-90+s*1.8;const ticks=[0,20,40,60,80,100].map(v=>{const a=(-180+v*1.8)*Math.PI/180;return `<line x1="${100+70*Math.cos(a)}" y1="${100+70*Math.sin(a)}" x2="${100+62*Math.cos(a)}" y2="${100+62*Math.sin(a)}" stroke="rgba(255,255,255,.35)" stroke-width="2"/>`}).join("");
   return `<svg class="mdG" viewBox="0 0 200 116" aria-hidden="true"><defs><linearGradient id="mdGr" x1="0" x2="1"><stop offset="0" stop-color="#b91c1c"/><stop offset=".35" stop-color="#f97316"/><stop offset=".55" stop-color="#facc15"/><stop offset=".78" stop-color="#a3e635"/><stop offset="1" stop-color="#22c55e"/></linearGradient></defs>
@@ -1503,7 +1504,7 @@ document.addEventListener("click",e=>{const gb=e.target.closest("[data-gfx]");if
 const P={a:"",b:"",site:"home",hfa:2.0};
 function rowOf(n){return ((S.ratings&&S.ratings.rows)||[]).find(r=>r[1]===n)}
 function predict(){const A=rowOf(P.a),B=rowOf(P.b);if(!A||!B)return null;const h=P.site==="home"?P.hfa:P.site==="away"?-P.hfa:0;
-  const m=A[3]-B[3]-h;/* positive = team1 favored */return{A,B,m,h,p:Phi(m/15.5)}}
+  const m=A[3]-B[3]-h;/* positive = team1 favored */return{A,B,m,h,p:Phi(m/wpSig(null))}}
 function renderPredict(soft){const R_=((S.ratings&&S.ratings.rows)||[]).slice().sort((x,y)=>x[1].localeCompare(y[1]));if(!R_.length)return;
   if(!P.a){const s=R_.slice().sort((x,y)=>x[0]-y[0]);P.a=s[0][1];P.b=s[1][1]}
   if(!(soft&&document.activeElement&&["pA","pB","pA-q","pB-q"].includes(document.activeElement.id))){const opt=v=>R_.map(r=>`<option ${r[1]===v?"selected":""}>${esc(r[1])}</option>`).join("");$("pA").innerHTML=opt(P.a);$("pB").innerHTML=opt(P.b)}
@@ -1841,7 +1842,7 @@ function bestCols(n,aw,ah,gap,ar){let best=[4,0];for(const cols of [2,3,4,5,6,7,
 const wk=()=>((S.meta||{}).week??"");
 function pfav(g,m){return m>0?{t:g.a,v:m}:{t:g.h,v:-m}}
 const Phi=z=>.5*(1+erf(z/Math.SQRT2));function erf(x){const s=Math.sign(x);x=Math.abs(x);const t=1/(1+.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x);return s*y}
-const winp=m=>Phi(Math.abs(m)/15.5);
+const winp=m=>Phi(Math.abs(m)/wpSig(null));
 const fmtv=v=>{const r=Math.round(v*2)/2;return r===0?"PK":"−"+(Math.abs(r)%1?Math.abs(r).toFixed(1):Math.abs(r))};
 
 function moodPill(c,t,x,y,h,align,maxW){if(gopt.showMood===false||typeof moodFor!=="function")return 0;const R=moodFor(t);if(!R)return 0;const [_,lab,emo,col]=moodOf(R.s);
@@ -2389,7 +2390,7 @@ function exportTabs(){const m=S.meta||{},G=curWeekGames(),R=(S.ratings&&S.rating
   const metaRows=[["key","value","description"],["feed_version",FEED_VERSION,"Format version of this export"],["model_name",m.name||"LFTG Performance Index","Display name"],["season",season,""],["week",m.week??"","Current slate week"],
     ["updated_utc",m.updated||"","When the index last ran"],["exported_utc",new Date().toISOString(),"When this file was exported"],["lines_as_of",m.linesAsOf||"","Line snapshot used for edges"],["model_version",m.model||"","Index version"],
     ["spread_sign","home_spread","lftg_home_spread / market_home_spread / open_home_spread: negative = home team favored, positive = away team favored"],
-    ["predictor_home_field",2.0,"Points of home field used by the matchup predictor"],["win_prob_sigma",15.5,"Win probability = NormalCDF(margin / 15.5)"],
+    ["predictor_home_field",2.0,"Points of home field used by the matchup predictor"],["win_prob_sigma",15.5,"Win probability = NormalCDF(margin / 15.5); 13 from Week 12 and in the postseason"],
     ["schedule","Hourly 9 AM–11 PM ET Mon–Sat until kickoff; Sunday 2:38 and 7:38 PM ET opener checks; full refit Sunday before 9 AM ET","Update cadence"],
     ["source","Lines: DraftKings + Bovada via CollegeFootballData.com. Ratings and picks: LFTG Performance Index (@LFTGCFB)","Attribution"],["handle","@LFTGCFB","Creator handle"]];
   const uH=["game_id","week","kickoff_utc","status","matchup","dog","favorite","spread","dog_moneyline","index_win_pct","vegas_win_pct","gap","tier","reasons"];
@@ -2587,39 +2588,63 @@ function rdInit(){if(!$("v-rundown"))return;$("rdLen").addEventListener("change"
 pkInit();rdInit();
 /* ---------- Live bets: in-game calculator, entry plan, live bet log ---------- */
 const LVS=15.5,LVST=16.5,LVW=0.4;
-/* Calibrated on 3,729 FBS games 2021–25 (quarter scores vs DraftKings closing lines): early score/pace add ~nothing beyond the close; leads 7+ pts ahead of expectation give back ~10%; scoring is back-loaded (rest-of-game share after Q1/Q2/Q3 = .795/.494/.270); 15+/22+ leads after halftime trim the rest-of-game total 1.2/2.5; outcome sd 15.5√f (margin), 16.5√f (total). */
-function lvRest(pl){const X=[0,.25,.5,.75,1],Y=[1,.7946,.4941,.2703,0];for(let i=0;i<4;i++)if(pl<=X[i+1]){const t=(pl-X[i])/(X[i+1]-X[i]);return Y[i]+(Y[i+1]-Y[i])*t}return 0}
-function lvBase(g){const mi=-(+g.model),mk=g.mkt!=null?-(+g.mkt):null;const mu0=mk==null?mi:mk+LVW*(mi-mk);const tm=g.tot&&g.tot.model!=null?+g.tot.model:null,tc=g.tot?(+g.tot.cur||+g.tot.line||null):null;const T0=tc&&tm!=null?tc+LVW*(tm-tc):(tc||tm||52);return{mu0,T0,mk,tc}}let LV={gid:null},LVLOG=null,LVT=null;
+/* Live model v2 (adopted 2026-11-19 after the overnight lab). Fit on 6,468 FBS games 2015–21 drive-by-drive (CFBD drives + median closing lines), tested on 2022–25:
+   margin = score + time-left × (close + 30% of index gap) − 11% of the lead vs expectation early (fading to ~5% late) + possession/field-position expected points (CFBD EP × 0.71, fading in the 2nd half);
+   total = points + remaining share (fitted curve) × (close total + 15% of index gap) − blowout trim (1.9 at 22+, 0.6 at 15+, 2nd half) + overtime chance + EP of the drive in progress;
+   σ margin = √(15.7²·f + 0.4²)·(total/55)^.25, σ total = √(16.1²·f + 3.3²)·(total/55)^.25; totals use the fitted (right-skewed) outcome curve, not a bell curve.
+   Pregame baseline is frozen at kickoff (live/lines history) so in-play lines can't leak into the "close". */
+const LV2={"v":"2.0","wM":0.3,"wT":0.15,"dM":-0.113,"dMpl":0.081,"ps":0.706,"psL":-0.462,"b22":-1.89,"b15":-0.58,"tie":22.3,"psT":0.42,"psTc":1.6,"aM":15.7,"bM":0.4,"aT":16.1,"bT":3.3,"k":0.25,"spP":0.6,"spE":4,"ttP":0.6,"ttE":4,"noOver":true,"A":[0.0299,0.0661,0.1097,0.1586,0.206,0.2578,0.3072,0.3601,0.4054,0.4547,0.5017,0.5718,0.6286,0.6721,0.725,0.7723,0.8235,0.8768,0.926,0.9852],"CT":[[0.0001,0.0003,0.0014,0.0053,0.0128,0.0282,0.0544,0.0969,0.155,0.2346,0.3293,0.4342,0.5403,0.6356,0.7208,0.7907,0.8495,0.8956,0.9315,0.9551,0.9713,0.9824,0.9889,0.9924,0.9949],[0,0,0.0002,0.0011,0.0044,0.016,0.0398,0.0789,0.1412,0.223,0.3171,0.4242,0.5327,0.6325,0.7188,0.7912,0.8514,0.8964,0.9304,0.9544,0.9703,0.9796,0.986,0.9903,0.9929],[0,0,0,0,0.0001,0.0012,0.0084,0.033,0.0888,0.1837,0.3152,0.4694,0.5791,0.676,0.7488,0.8146,0.8644,0.9065,0.9335,0.9525,0.9661,0.975,0.9814,0.986,0.9893]]};const LVEP={"1_10":[0.08,0.21,0.38,0.61,0.92,1.31,1.76,2.24,2.72,3.16,3.52,3.81,4.03,4.19,4.3,4.38,4.44,4.49,4.49],"2_3":[0.24,0.35,0.51,0.72,1.01,1.36,1.79,2.27,2.76,3.22,3.61,3.93,4.18,4.36,4.5,4.6,4.67,4.73,4.77],"2_7":[-0.08,0,0.11,0.26,0.47,0.75,1.1,1.53,2.01,2.49,2.95,3.34,3.66,3.9,4.08,4.21,4.3,4.36,4.36],"2_12":[-0.25,-0.21,-0.14,-0.04,0.1,0.29,0.55,0.89,1.31,1.77,2.26,2.72,3.13,3.46,3.71,3.89,4.03,4.03,4.03],"3_1":[-0.02,0.04,0.13,0.25,0.43,0.66,0.97,1.35,1.8,2.28,2.77,3.2,3.57,3.86,4.08,4.24,4.36,4.45,4.51],"3_4":[-0.18,-0.13,-0.07,0.03,0.16,0.34,0.59,0.92,1.32,1.78,2.27,2.74,3.16,3.5,3.77,3.97,4.12,4.22,4.29],"3_8":[-0.29,-0.26,-0.21,-0.15,-0.06,0.08,0.26,0.51,0.84,1.24,1.71,2.19,2.66,3.08,3.42,3.68,3.87,4.01,4.01],"3_14":[-0.36,-0.34,-0.32,-0.28,-0.23,-0.15,-0.03,0.13,0.35,0.65,1.02,1.46,1.94,2.42,2.86,3.23,3.52,3.52,3.52],"4_1":[-0.25,-0.22,-0.18,-0.12,-0.04,0.07,0.24,0.46,0.75,1.13,1.57,2.05,2.53,2.97,3.35,3.64,3.87,4.03,4.15],"4_4":[-0.31,-0.29,-0.26,-0.22,-0.16,-0.07,0.05,0.23,0.47,0.79,1.18,1.64,2.13,2.6,3.02,3.37,3.65,3.85,3.99],"4_10":[-0.37,-0.36,-0.35,-0.32,-0.29,-0.24,-0.16,-0.05,0.1,0.32,0.6,0.96,1.4,1.88,2.36,2.8,3.18,3.49,3.49]};
+function lvShare(f){const A=LV2.A,x=f*20-0.5;if(x<=0)return A[0]*Math.max(0,f)/0.025;if(x>=19)return A[19]+(1-A[19])*Math.min(1,(f-0.975)/0.025);const i=Math.floor(x),t=x-i;return A[i]+(A[i+1]-A[i])*t}
+function lvRest(pl){return lvShare(1-pl)}
+function lvCdfT(z,f){const c=LV2.CT[f>0.6?0:f>0.3?1:2];if(z<=-3)return Math.max(1e-4,c[0])*Math.exp(z+3);if(z>=3)return 1-(1-c[24])*Math.exp(-(z-3));const x=(z+3)/0.25,i=Math.min(23,Math.floor(x)),t=x-i;return c[i]+(c[i+1]-c[i])*t}
+function lvZmed(f){const c=LV2.CT[f>0.6?0:f>0.3?1:2];for(let i=0;i<24;i++)if(c[i+1]>=0.5){const t=(0.5-c[i])/Math.max(1e-6,c[i+1]-c[i]);return -3+0.25*(i+t)}return 0}
+function lvEP(dn,ds,ytg){dn=Math.max(1,Math.min(4,+dn||1));ds=+ds||10;ytg=Math.max(1,Math.min(99,+ytg||75));let best=null,bd=1e9;for(const k in LVEP){const [a,b]=k.split("_").map(Number);if(a!==dn)continue;const d=Math.abs(b-ds);if(d<bd){bd=d;best=k}}const T=LVEP[best||"1_10"];const x=(100-ytg)/5-1;if(x<=0)return T[0];if(x>=18)return T[18];const i=Math.floor(x),t=x-i;return T[i]+(T[i+1]-T[i])*t}
+function lvPre(g){/* pregame close frozen at kickoff: last live/lines history point before kickoff */let sp=null,tt=null;try{const k=new Date(g.k).getTime()/60000;const h=typeof LIVEL!=="undefined"&&LIVEL&&LIVEL.h&&LIVEL.h[g.id];if(h&&h.length&&!isNaN(k)){for(const p of h)if(p[0]<=k){if(p[1]!=null)sp=+p[1];if(p[2]!=null)tt=+p[2]}}}catch(e){}return{sp,tt}}
+function lvBase(g){const pre=lvPre(g),started=g.k&&new Date(g.k).getTime()<Date.now();const mi=-(+g.model);const mkt=started&&pre.sp!=null?pre.sp:(g.mkt!=null?+g.mkt:null);const mk=mkt!=null?-mkt:null;const mu0=mk==null?mi:mk+LV2.wM*(mi-mk);
+  const tm=g.tot&&g.tot.model!=null?+g.tot.model:null,tc0=g.tot?(+g.tot.cur||+g.tot.line||null):null,tc=started&&pre.tt!=null?pre.tt:tc0;const T0=tc&&tm!=null?tc+LV2.wT*(tm-tc):(tc||tm||52);return{mu0,T0,mk,tc,frozen:started&&pre.sp!=null}}let LV={gid:null},LVLOG=null,LVT=null;
+function lvSit(g,s){try{if(s.auto===false||typeof ESPNL==="undefined"||!ESPNL||!ESPNL.g)return null;const E=ESPNL.g[String(g.id)];if(!E||E.done||!E.sit||!E.sit.pos)return null;if(+E.as!==+s.as||+E.hs!==+s.hs)return null;
+  const pos=E.sit.pos===g.h?1:E.sit.pos===g.a?-1:0;if(!pos)return null;const dd=String(E.sit.dd||"");let dn=+E.sit.dn||0,ds=+E.sit.ds||0;const m=/(\d)(?:st|nd|rd|th)\s*&\s*(\d+|Goal)/i.exec(dd);if(!dn&&m){dn=+m[1];ds=/goal/i.test(m[2])?0:+m[2]}
+  let ytg=null;if(/at\s+50\b/.test(dd))ytg=50;else{const y=/at\s+([A-Za-z&.'\- ]+?)\s+(\d{1,2})\s*$/.exec(dd);if(y){const ab=y[1].trim().toUpperCase(),mine=String(E.sit.pa||T(pos>0?g.h:g.a).abbr||"").toUpperCase(),theirs=String(T(pos>0?g.a:g.h).abbr||"").toUpperCase();if(ab===mine)ytg=100-(+y[2]);else if(ab===theirs||(E.sit.pa&&ab!==mine))ytg=+y[2]}}
+  if(ytg==null||!dn)return null;if(!ds)ds=ytg;return{pos,dn,ds,ytg,txt:dd,team:pos>0?g.h:g.a,rz:!!E.sit.rz}}catch(e){return null}}
 const lvState=id=>{LV[id]=LV[id]||{as:0,hs:0,q:1,clk:"15:00",fav:"",sp:"",tot:"",qbA:false,qbH:false,wx:false,odds:-110,units:0.5};return LV[id]};
 function lvF(q,clk){if(q>=5)return 0.04;const m=/^(\d{1,2})(?::(\d{1,2}))?$/.exec(String(clk||"").trim());let mins=m?(+m[1]+(+(m[2]||0))/60):15;mins=Math.max(0,Math.min(15,mins));return Math.max(0.003,((4-q)*15+mins)/60)}
 function lvGames(){return games().filter(g=>!g.done&&g.model!=null).sort((a,b)=>{const la=!isLive(a)?0:1,lb=!isLive(b)?0:1;return la-lb||String(a.k).localeCompare(String(b.k))})}
 const lvSpTxt=(g,hs)=>hs==null||isNaN(hs)?"—":Math.abs(hs)<0.25?"Pick'em":hs<0?`${g.h} −${snN(hs)}`:`${g.a} −${snN(hs)}`;
 function lvCalc(g,s){const f=lvF(+s.q,s.clk),played=1-f,mH=(+s.hs||0)-(+s.as||0),P=(+s.hs||0)+(+s.as||0);
-  const B=lvBase(g),mu0=B.mu0,T0=B.T0;
+  const B=lvBase(g),mu0=B.mu0,T0=B.T0,mk=B.mk!=null?B.mk:B.mu0;
   let rateM=mu0,rateT=T0;const notes=[],warn=[];
   if(s.qbA){rateM+=7;rateT-=3;warn.push(`${g.a} starting QB out: index shifts 7 pts per game toward ${g.h}.`)}
   if(s.qbH){rateM-=7;rateT-=3;warn.push(`${g.h} starting QB out: index shifts 7 pts per game toward ${g.a}.`)}
   if(s.wx){rateT*=0.9;warn.push("Weather turned: index cuts the rest-of-game scoring rate 10%.")}
-  const rs=lvRest(played),d=mH-played*mu0,rev=Math.abs(d)>=7?-0.1*d:0,blow=played>=0.5?(Math.abs(mH)>=22?-2.5:Math.abs(mH)>=15?-1.2:0):0;
-  const M=mH+f*rateM+rev,FT=P+rs*rateT+blow,sd=LVS*Math.sqrt(f),sdT=LVST*Math.sqrt(f);const pH=nPhi(M/sd);
-  const fairHS=-M;const out={f,mH,P,M,FT,pH,fairHS,notes,warn,sp:null,tt:null};
+  const sit=+s.q<5?lvSit(g,s):null,ep=sit?lvEP(sit.dn,sit.ds,sit.ytg):0,pe=sit?sit.pos*ep:0;
+  const d=mH-played*mk,rev=LV2.dM*d+LV2.dMpl*d*played,posAdj=sit?LV2.ps*pe+(f>0.5?0:LV2.psL*pe*(0.5-f)*2):0;
+  const blow=played>=0.5?(Math.abs(mH)>=22?LV2.b22:Math.abs(mH)>=15?LV2.b15:0):0;
+  const sdr=15.5*Math.sqrt(Math.max(f,0.003)),zr=(mH+f*mk)/sdr,tie=+s.q>=5?0:LV2.tie*Math.exp(-0.5*zr*zr)/(sdr*2.5066283);
+  const M=mH+f*rateM+rev+posAdj,FTm=P+lvShare(f)*rateT+blow+tie+(sit?LV2.psT*(ep-LV2.psTc):0);
+  const sc=Math.pow(Math.max(30,Math.min(90,B.tc||T0))/55,LV2.k),sd=Math.sqrt(LV2.aM*LV2.aM*f+LV2.bM*LV2.bM)*sc,sdT=Math.sqrt(LV2.aT*LV2.aT*f+LV2.bT*LV2.bT)*sc;
+  const FT=FTm+lvZmed(f)*sdT;const pH=nPhi(M/sd);
+  const fairHS=-M;const out={f,mH,P,M,FT,FTm,pH,fairHS,notes,warn,sp:null,tt:null,sit,v:LV2.v};
   // spread verdict
   const sp=parseFloat(s.sp);if(s.fav&&!isNaN(sp)){const LH=s.fav==="h"?-Math.abs(sp):s.fav==="a"?Math.abs(sp):0;const pHc=nPhi((M+LH)/sd);const side=pHc>=0.5?"h":"a";const p=side==="h"?pHc:1-pHc;const lineSide=side==="h"?LH:-LH;const edge=Math.abs(fairHS-LH);
     out.sp={LH,side,p,lineSide,edge,team:side==="h"?g.h:g.a}}
-  const tl=parseFloat(s.tot);if(!isNaN(tl)&&tl>0){const pO=1-nPhi((tl-FT)/sdT);const side=pO>=0.5?"o":"u";out.tt={L:tl,side,p:side==="o"?pO:1-pO,edge:Math.abs(FT-tl)}}
+  const tl=parseFloat(s.tot);if(!isNaN(tl)&&tl>0){const pO=1-lvCdfT((tl-FTm)/sdT,f);const side=pO>=0.5?"o":"u";out.tt={L:tl,side,p:side==="o"?pO:1-pO,edge:Math.abs(FT-tl)}}
   // pass overrides and context notes
   const minsLeft=f*60;const block=[];if(+s.q>=5)block.push("Overtime: books price it tightly and one possession decides it.");
   if(minsLeft<6&&+s.q<5)block.push("Under 6 minutes left: late-game lines are sharp and fouls/clock strategy dominate.");
   if(Math.abs(mH)>=21&&played>=0.6)block.push("Blowout: backups and clock-killing make the rest unpredictable for spreads.");
+  if(played>0.02&&g.k&&new Date(g.k).getTime()<Date.now()&&!B.frozen)warn.push("Couldn't find the pregame closing line from before kickoff, so the baseline uses the latest market number. Double-check it isn't an in-game line.");
   if(s.qbA||s.qbH)notes.push("A QB change is the one in-game event worth reacting to; double-check who is in.");
-  if(played>0.05){const mktMove=out.sp?(out.sp.LH-(g.mkt!=null?+g.mkt:-mu0)):null,idxMove=fairHS-(-mu0);
+  if(sit)notes.push(`${sit.team} ball, ${sit.txt}${sit.rz?" (red zone)":""}: the drive in progress is worth about ${snN(Math.abs(LV2.ps*ep*(f>0.5?1:1+LV2.psL/LV2.ps*(0.5-f)*2)))} pts to ${sit.team} in the fair line.`);
+  if(played>0.05){const mktMove=out.sp?(out.sp.LH-(mk!=null?-mk:-mu0)):null,idxMove=fairHS-(-mu0);
     if(mktMove!=null&&Math.abs(mH)>=7&&Math.abs(mktMove)-Math.abs(idxMove)>=2.5&&Math.sign(mktMove)===Math.sign(idxMove))notes.push(`Market is chasing the score: the live line moved ${snN(mktMove)} pts from the close; the index moved ${snN(idxMove)}. Scoring runs alone aren't predictive, so the value is usually on the team that's behind.`);
-    const pace=P/played,exp=T0;if(Math.abs(pace-exp)>=12&&played>=0.2)notes.push(`Scoring pace: on track for ${Math.round(pace)} vs ${Math.round(exp)} expected before kickoff. Across 3,729 games, early pace added nothing beyond the closing total, so the index doesn't chase it${pace>exp?"; books that push the live total up with the pace leave value on the under.":"; books that drop the live total with a slow start leave value on the over."}`);
-    if(Math.abs(d)>=14&&played<0.75)notes.push(`Big lead vs expectation (${snN(Math.abs(d))} pts): historically the leader gives back about 10% of that over the rest of the game.`)}
-  const verdict=(x,minEdge)=>{if(!x)return null;if(block.length)return {v:"Pass",why:block[0]};if(x.p>=0.58&&x.edge>=minEdge)return {v:"Jump in",why:`Index gives it ${Math.round(x.p*100)}% at this number (needs 52.4% at −110); ${snN(x.edge)} pts of value.`};if(x.p>=0.55)return {v:"Watch",why:`${Math.round(x.p*100)}%: close. Wait for a better number (about ${snN(Math.max(0,minEdge-x.edge)+0.5)} more pts) or a stop.`};return {v:"Pass",why:`Only ${Math.round(x.p*100)}%: no edge at this number.`}};
-  if(out.sp)out.sp.ver=verdict(out.sp,3);if(out.tt)out.tt.ver=verdict(out.tt,4);out.block=block;return out}
-function lvPlan(g){const mu0=lvBase(g).mu0,rows=[["End of Q1",0.75],["Halftime",0.5],["End of Q3",0.25]];const ms=[-14,-7,-3,0,3,7,14];
-  const cell=(f,m)=>{const d=m-(1-f)*mu0,rev=Math.abs(d)>=7?-0.1*d:0;return -(m+f*mu0+rev)};
+    const pace=P/played,exp=T0;if(Math.abs(pace-exp)>=12&&played>=0.2)notes.push(`Scoring pace: on track for ${Math.round(pace)} vs ${Math.round(exp)} expected before kickoff. Across 6,400+ games, early pace added almost nothing beyond the closing total, so the index doesn't chase it${pace>exp?"; books that push the live total up with the pace leave value on the under.":"; a slow start doesn't make the over a bet by itself: overs are watch-only."}`);
+    if(Math.abs(d)>=14&&played<0.75)notes.push(`Big lead vs expectation (${snN(Math.abs(d))} pts): historically the leader gives back about ${Math.round(-100*(LV2.dM+LV2.dMpl*played))}% of that over the rest of the game.`)}
+  const verdict=(x,minEdge,minP,noJump)=>{if(!x)return null;if(block.length)return {v:"Pass",why:block[0]};if(!noJump&&x.p>=minP&&x.edge>=minEdge)return {v:"Jump in",why:`Index gives it ${Math.round(x.p*100)}% at this number (needs 52.4% at −110); ${snN(x.edge)} pts of value.`};
+    if(noJump&&x.p>=0.55)return {v:"Watch",why:`${Math.round(x.p*100)}% on the over, but overs are watch-only: the old live model overrated overs across 2015–25, and over calls went 14-26 against real live lines in Weeks 11–12.`};
+    if(x.p>=0.55)return {v:"Watch",why:`${Math.round(x.p*100)}%: close. Wait for a better number (about ${snN(Math.max(0,minEdge-x.edge)+0.5)} more pts) or a stop.`};return {v:"Pass",why:`Only ${Math.round(x.p*100)}%: no edge at this number.`}};
+  if(out.sp)out.sp.ver=verdict(out.sp,LV2.spE,LV2.spP,false);if(out.tt)out.tt.ver=verdict(out.tt,LV2.ttE,LV2.ttP,LV2.noOver&&out.tt.side==="o");out.block=block;return out}
+function lvPlan(g){const B=lvBase(g),mu0=B.mu0,mk=B.mk!=null?B.mk:mu0,rows=[["End of Q1",0.75],["Halftime",0.5],["End of Q3",0.25]];const ms=[-14,-7,-3,0,3,7,14];
+  const cell=(f,m)=>{const d=m-(1-f)*mk,rev=LV2.dM*d+LV2.dMpl*d*(1-f);return -(m+f*mu0+rev)};
   return {ms,rows:rows.map(([n,f])=>[n,ms.map(m=>cell(f,m))])}}
 function lvRenderOut(){const g=allGames().find(x=>String(x.id)===LV.gid);const el=$("lvOut");if(!g||!el)return;const s=lvState(LV.gid);const r=lvCalc(g,s);
   const vp=v=>v?`<span class="pill p-${v.v==="Jump in"?"bb":v.v==="Watch"?"lean":"pass"}">${v.v}</span>`:"";
@@ -2639,7 +2664,7 @@ function renderLive(){const sel=$("lvGame");if(!sel)return;const G=lvGames();if(
      <div class="lvrow"><label for="lv-fav">Live spread</label><select id="lv-fav"><option value="">Favorite…</option><option value="a" ${s.fav==="a"?"selected":""}>${esc(g.a)}</option><option value="h" ${s.fav==="h"?"selected":""}>${esc(g.h)}</option><option value="pk" ${s.fav==="pk"?"selected":""}>Pick'em</option></select><span>−</span><input id="lv-sp" type="text" inputmode="decimal" value="${esc(s.sp)}" style="width:70px" aria-label="Live spread points"></div>
      <div class="lvrow"><label for="lv-tot">Live total</label><input id="lv-tot" type="text" inputmode="decimal" value="${esc(s.tot)}" style="width:80px"><label for="lv-odds">Odds</label><input id="lv-odds" type="text" inputmode="numeric" value="${esc(s.odds)}" style="width:70px"><label for="lv-units">Units</label><input id="lv-units" type="text" inputmode="decimal" value="${esc(s.units)}" style="width:60px"></div>
      <div class="lvrow small"><label><input type="checkbox" id="lv-qbA" ${s.qbA?"checked":""}> ${esc(T(g.a).abbr)} starting QB out</label><label><input type="checkbox" id="lv-qbH" ${s.qbH?"checked":""}> ${esc(T(g.h).abbr)} starting QB out</label><label><input type="checkbox" id="lv-wx" ${s.wx?"checked":""}> Weather turned</label></div>`;
-    const P=lvPlan(g);$("lvPlan").innerHTML=`<p class="small muted">Fair live spread by score and time. Columns are ${esc(g.h)}'s lead (negative = trailing). Jump in when your book is 3+ points better than this for your side.</p><div class="tablebox"><table><thead><tr><th></th>${P.ms.map(m=>`<th class="num">${m>0?esc(T(g.h).abbr)+" +"+m:m===0?"Tied":esc(T(g.h).abbr)+" "+m}</th>`).join("")}</tr></thead><tbody>${P.rows.map(([n,cs])=>`<tr><td><b>${n}</b></td>${cs.map(v=>`<td class="num">${Math.abs(v)<0.25?"PK":esc(v<0?T(g.h).abbr:T(g.a).abbr)+" −"+snN(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`}
+    const P=lvPlan(g);$("lvPlan").innerHTML=`<p class="small muted">Fair live spread by score and time. Columns are ${esc(g.h)}'s lead (negative = trailing). Jump in when your book is ${LV2.spE}+ points better than this for your side.</p><div class="tablebox"><table><thead><tr><th></th>${P.ms.map(m=>`<th class="num">${m>0?esc(T(g.h).abbr)+" +"+m:m===0?"Tied":esc(T(g.h).abbr)+" "+m}</th>`).join("")}</tr></thead><tbody>${P.rows.map(([n,cs])=>`<tr><td><b>${n}</b></td>${cs.map(v=>`<td class="num">${Math.abs(v)<0.25?"PK":esc(v<0?T(g.h).abbr:T(g.a).abbr)+" −"+snN(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`}
   lvApplyFeed();lvAutoTag();renderLiveBoard();lvRenderOut();renderLiveLog()}
 const LVLS="lftgLiveLog";function lvMsg(t,bad){for(const id of ["lvMsg","lvMsg2"]){const e=$(id);if(e){e.textContent=t;e.style.color=bad?"#e0283c":""}}}
 function lvLocal(){try{localStorage.setItem(LVLS,JSON.stringify(LVLOG))}catch(e){}}
@@ -2989,7 +3014,7 @@ async function espnPoll(){if(ESPNOK===false)return;const R=espnRev();if(!R)retur
     const hs=+((sw?A:H).score)||0,as=+((sw?H:A).score)||0;
     const done=!!st.completed||st.state==="post";const det=String(st.shortDetail||st.detail||"");
     const si=c.situation||null;const pn=si&&si.possession?R[String(si.possession)]||(String(si.possession)===String(H.team.id)?(sw?g.a:g.h):String(si.possession)===String(A.team.id)?(sw?g.h:g.a):null):null;
-    out[String(g.id)]={as,hs,q:c.status.period||1,clk:c.status.displayClock||"",half:/half/i.test(det)||st.name==="STATUS_HALFTIME",done,det,k:kt,eid:String(ev.id),sit:si&&!done?{dd:si.downDistanceText||si.shortDownDistanceText||"",pos:pn,rz:!!si.isRedZone,lp:si.lastPlay&&si.lastPlay.text||""}:null}}
+    out[String(g.id)]={as,hs,q:c.status.period||1,clk:c.status.displayClock||"",half:/half/i.test(det)||st.name==="STATUS_HALFTIME",done,det,k:kt,eid:String(ev.id),sit:si&&!done?{dd:si.downDistanceText||si.shortDownDistanceText||"",pos:pn,rz:!!si.isRedZone,lp:si.lastPlay&&si.lastPlay.text||"",dn:+si.down||0,ds:+si.distance||0,pa:si.possession?(String(si.possession)===String(H.team.id)?H.team.abbreviation:String(si.possession)===String(A.team.id)?A.team.abbreviation:"")||"":""}:null}}
   ESPNL={u:Date.now(),g:out};espnRender()}
 function espnFresh(){return ESPNL.u&&Date.now()-ESPNL.u<5*60e3}
 function espnMerge(){if(!espnFresh())return;const E=ESPNL.g;if(!Object.keys(E).length)return;
