@@ -954,7 +954,7 @@ function mtEnd(ok){const d=MTDG;MTDG=null;if(!d||!d.on)return;document.body.clas
 
 /* ===== brand mark, welcome strip, viewer mode ===== */
 function isViewer(){return document.body.classList.contains("viewer")}
-function brandMark(){const m=$("brandMark");if(!m)return;if(PUB){const im=new Image();im.onload=()=>{m.style.backgroundImage="url('brand.png')";m.classList.add("img")};im.src="brand.png";return}const id=S.logos&&S.logos.__brand;if(id){m.style.backgroundImage=`url('/_blob/${id}')`;m.classList.add("img")}}
+function brandMark(){const m=$("brandMark");if(!m)return;if(PUB){const u="brand.png?v=1";const im=new Image();im.onload=()=>{m.style.backgroundImage=`url('${u}')`;m.classList.add("img");try{for(const r of ["icon","apple-touch-icon"]){let l=document.querySelector(`link[rel="${r}"]`);if(!l){l=document.createElement("link");l.rel=r;document.head.appendChild(l)}l.href=u}}catch(e){}};im.src=u;return}const id=S.logos&&S.logos.__brand;if(id){m.style.backgroundImage=`url('/_blob/${id}')`;m.classList.add("img")}}
 (function(){try{if(!localStorage.getItem("lftg_welc"))$("welcome").hidden=false}catch(e){$("welcome").hidden=false}
   document.addEventListener("click",e=>{if(e.target&&e.target.id==="welX"){$("welcome").hidden=true;try{localStorage.setItem("lftg_welc","1")}catch(x){}}});
   (async()=>{let ed=false;try{const u=window.claude&&claude.use?await claude.use("user"):null;if(u){const f=u.canEdit||u.isOwner;ed=!!(f?await f.call(u):false)}}catch(e){ed=false}
