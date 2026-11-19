@@ -1444,7 +1444,7 @@ function ppEval0(x,mk,line,oo,uo){const med=ppAdj(mk,x.m[mk]);if(med==null)retur
   const po=ppOver(mk,x.pos,med,line);if(po==null)return null;let fo=io!=null&&iu!=null?io/(io+iu):(io!=null?io:(iu!=null?1-iu:0.5));
   const pf=fo+PPW*(po-fo);const side=pf>=fo?"Over":"Under";const p=side==="Over"?pf:1-pf;const odds=side==="Over"?oo:uo;const dec=odds?(+odds>0?1+odds/100:1+100/-odds):null;const ev=dec?p*dec-1:null;const edge=Math.abs(pf-fo);
   return {po:pf,raw:po,side,p,edge,ev,tier:ppTier(edge,ev)}}
-function ppPlayers(){if(!PP)return [];const injOut=t=>{try{return injFor(t).L}catch(e){return []}};return PP.p.map(r=>{const g=PP.g[r[2]];const team=r[1]?g[1]:g[2],opp=r[1]?g[2]:g[1];const m={};PP.ord.forEach((k,i)=>{if(r[4][i]!=null)m[k]=r[4][i]});
+function ppPlayers(){if(!PP)return [];const injOut=t=>{try{return injFor(t).L}catch(e){return []}};return (PP.p||[]).filter(r=>PP.g&&PP.g[r[2]]).map(r=>{const g=PP.g[r[2]];const team=r[1]?g[1]:g[2],opp=r[1]?g[2]:g[1];const m={};PP.ord.forEach((k,i)=>{if(r[4][i]!=null)m[k]=r[4][i]});
   const inj=injOut(team).find(p=>nk(p.n)===nk(r[0]));return {name:r[0],team,opp,home:r[1],gi:r[2],pos:r[3],m,l5:r[5]||{},inj:inj?inj.st:null}})}
 function ppFmt(mk,v){if(v==null)return "—";if(mk==="atd")return Math.round(v*100)+"%";if(mk==="ptd"||mk==="rc")return (+v).toFixed(1);return Math.round(v)}
 function renderProps(){const L=$("ppList");if(!L)return;
