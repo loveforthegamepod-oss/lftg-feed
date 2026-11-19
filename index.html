@@ -373,6 +373,17 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 .lvtab th .tb{width:20px;height:20px;vertical-align:-5px}.lvtab td,.lvtab th{padding:5px 9px}
 .lvcalls{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.lvcall{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04)}
 .lvpl{font-size:13px;padding:2px 0}
+.mxmood{display:flex;gap:8px;align-items:center;margin:6px 0 4px}.mxme{font-size:22px;line-height:1}
+.mxmt{flex:1;min-width:0}.mxmbar{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:3px}
+.mxmbar i{display:block;height:100%;border-radius:99px;background:var(--mc,#facc15);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.mxmw{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.mvWrap{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:640px){.mvWrap{grid-template-columns:1fr}}
+.mvSide{border-top:3px solid var(--mc,rgba(255,255,255,.2))}.mvG{position:relative;max-width:180px;margin:4px auto 0}.mvG .mdEmo{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font-size:26px}
+.mvLab{text-align:center;font-weight:800;font-size:18px;margin-top:2px}.mvNum{text-align:center;font-size:13px;opacity:.85}.mvNum b{font-size:18px}
+.mvSide .mdWhy{margin-top:8px}
+.mvSide .mdArc{animation:mdArc 1.1s cubic-bezier(.2,.8,.2,1) both}.mvSide .mdNeedle{animation:mdNeedle 1.3s cubic-bezier(.2,1.25,.3,1) both}
+@media (prefers-reduced-motion:reduce){.mvSide .mdArc,.mvSide .mdNeedle{animation:none!important}}
+.pub [data-lvlog],.pub [data-lvdel],.pub [data-lvr]{display:none!important}
 .lvtw{position:relative;display:flex;align-items:stretch;background:color-mix(in srgb,var(--bg,#120a2a) 88%,#000);border-bottom:1px solid rgba(255,255,255,.08)}
 .lvtw[hidden]{display:none}
 .lvtw .lvtick{flex:1;min-width:0;border-bottom:0;background:transparent;cursor:grab;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
@@ -1105,6 +1116,7 @@ function openMatchup(id){const g=findGame(id);if(!g)return;location.hash="matchu
    ${f?"":`<div class="card" style="margin-bottom:10px"><div class="stripe" style="background:${T(g.pick).c1}"></div><div class="top"><div><div class="bet">${esc(g.pick)} ${ln(g.line)}</div><div class="meta">Edge ${(+g.edge).toFixed(1)} · ${esc(g.book||"")}</div></div>${pill(g.tier)}</div>${g.note?`<div class="note">${esc(g.note)}</div>`:""}</div>`}
    ${g.wx?`<div class="note small">${g.wx.flag?"🌬️ <b>Weather watch.</b> ":"Forecast: "}${Math.round(g.wx.wind)} mph wind, ${g.wx.temp}°F, ${g.wx.pp}% chance of rain at kickoff.${g.wx.flag?" Unders have run 59–60% vs the opener in conditions like this since 2021 (informational only).":""}</div>`:""}
    ${g.ups&&!f?`<div class="note">${upTag(g.ups.tier)} ${esc(g.ups.dog)} +${g.ups.spread}: Index ${g.ups.idx.toFixed(0)}% · Vegas ${g.ups.vegas.toFixed(0)}% to win outright${g.ups.ml?` · ML +${g.ups.ml}`:""}${(g.ups.why||[]).length?"<br>"+g.ups.why.map(esc).join(" · "):""}</div>`:""}
+   ${moodVs(g)}
    <h3>Unit ranks (1 = best of ${N})</h3><div class="cmp">${cmp}</div>
    ${muBreakdown(g)}
    <div id="muPP">${muPlayers(g)}</div>
@@ -1238,8 +1250,14 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 /* ---------- matchup dropdowns (every screen) ---------- */
 const MXO=new Set();
 function mxWP(g){const m=g.model!=null?g.model:g.mkt;if(m==null)return null;return nPhi(m/15.5)}
+function moodMini(t,md,mo){const why=(md.d||[])[0];return `<div class="mxmood" style="--mc:${mo[3]}" title="${esc(t)} fan mood: ${esc(mo[1])} (${md.s}/100)"><span class="mxme">${mo[2]}</span><div class="mxmt"><div><span class="mxk">Fan mood</span> <b style="color:${mo[3]}">${esc(mo[1])}</b> <span class="mxk">${md.s}/100</span></div><div class="mxmbar"><i style="width:${md.s}%"></i></div>${why?`<div class="mxk mxmw">${why[0]>0?"▲":"▼"} ${esc(why[1])}</div>`:""}</div></div>`}
+function moodVs(g){if(typeof moodFor!=="function")return "";const A=moodFor(g.a),H=moodFor(g.h);if(!A&&!H)return "";
+  const side=(t,R)=>{if(!R)return `<div class="card mvSide"><div class="mxtn">${badge(t)}<b>${esc(t)}</b></div><div class="mxk">No mood reading yet.</div></div>`;const [_,lab,emo,col]=moodOf(R.s);
+    return `<div class="card mvSide" style="--mc:${col}"><div class="mxtn">${badge(t)}<b>${esc(t)}</b></div><div class="mvG">${moodGauge(R.s,col)}<div class="mdEmo">${emo}</div></div><div class="mvLab" style="color:${col}">${esc(lab)}</div><div class="mvNum"><b>${R.s}</b>/100${R.M.r?` · <span class="muted">${esc(R.M.r)}</span>`:""}</div><ul class="mdWhy">${R.d.slice(0,3).map(d=>`<li class="${d[0]>0?"up":"dn"}"><span>${d[0]>0?"▲":"▼"}</span>${esc(d[1])}</li>`).join("")}</ul></div>`};
+  let gap="";if(A&&H){const d=A.s-H.s;gap=Math.abs(d)<6?"Both fan bases are in about the same place heading in.":`${esc(d>0?g.a:g.h)} fans are feeling ${Math.abs(d)} points better about things than ${esc(d>0?g.h:g.a)} fans.`}
+  return `<h3>Fan mood check</h3><div class="mvWrap">${side(g.a,A)}${side(g.h,H)}</div>${gap?`<p class="small muted" style="margin-top:6px">${gap} Fan mood reads each fan base from recent results vs expectations, the betting line, playoff odds and the next game.</p>`:""}`}
 function mxBody(g){const R=(S.ratings&&S.ratings.rows)||[];const side=t=>{const r=R.find(x=>x[1]===t)||[];const md=typeof moodFor==="function"?moodFor(t):null;const mo=md?moodOf(md.s):null;let inj=[];try{inj=injFor(t).L.filter(x=>/^Out|Doubtful/.test(x.st))}catch(e){}
-    return `<div class="mxside"><div class="mxtn">${badge(t)}<b>${esc(t)}</b></div><div class="mxk">${r[0]?`LFTG #${r[0]}`:"Unranked"}${r[4]?` · ${esc(r[4])}`:""}${r[3]!=null?` · rating ${(r[3]>0?"+":"")+(+r[3]).toFixed(1)}`:""}</div>${mo?`<div class="mxk">Fan mood: ${mo[2]} ${esc(mo[1])} (${md.s})</div>`:""}<div class="mxk">${inj.length?`Out/doubtful: ${inj.slice(0,3).map(x=>esc(x.n)+(x.p?` (${esc(x.p)})`:"")).join(", ")}${inj.length>3?` +${inj.length-3}`:""}`:"No key players listed out"}</div></div>`};
+    return `<div class="mxside"><div class="mxtn">${badge(t)}<b>${esc(t)}</b></div><div class="mxk">${r[0]?`LFTG #${r[0]}`:"Unranked"}${r[4]?` · ${esc(r[4])}`:""}${r[3]!=null?` · rating ${(r[3]>0?"+":"")+(+r[3]).toFixed(1)}`:""}</div>${mo?moodMini(t,md,mo):""}<div class="mxk">${inj.length?`Out/doubtful: ${inj.slice(0,3).map(x=>esc(x.n)+(x.p?` (${esc(x.p)})`:"")).join(", ")}${inj.length>3?` +${inj.length-3}`:""}`:"No key players listed out"}</div></div>`};
   const f=g.final,wa=mxWP(g);const ta=T(g.a),th=T(g.h);
   const wp=wa==null?"":`<div class="mxwp"><span>${esc(ta.abbr)} ${Math.round(wa*100)}%</span><div class="mxbar"><i style="width:${(wa*100).toFixed(1)}%;background:color-mix(in srgb,${ta.c1} 75%,#fff)"></i><i style="width:${(100-wa*100).toFixed(1)}%;background:color-mix(in srgb,${th.c1} 75%,#fff)"></i></div><span>${Math.round(100-wa*100)}% ${esc(th.abbr)}</span></div><div class="mxk" style="text-align:center;margin-top:2px">Win chance on the LFTG line</div>`;
   let mt="";try{const x=mtAll().find(y=>y.id===g.id);if(x)mt=`<span class="mxchip" style="background:${MT[x.t].c};color:#1b1b1f">${MT[x.t].e} ${esc(MT[x.t].k)}</span>`}catch(e){}
@@ -1426,7 +1444,7 @@ function ppEval0(x,mk,line,oo,uo){const med=ppAdj(mk,x.m[mk]);if(med==null)retur
   const po=ppOver(mk,x.pos,med,line);if(po==null)return null;let fo=io!=null&&iu!=null?io/(io+iu):(io!=null?io:(iu!=null?1-iu:0.5));
   const pf=fo+PPW*(po-fo);const side=pf>=fo?"Over":"Under";const p=side==="Over"?pf:1-pf;const odds=side==="Over"?oo:uo;const dec=odds?(+odds>0?1+odds/100:1+100/-odds):null;const ev=dec?p*dec-1:null;const edge=Math.abs(pf-fo);
   return {po:pf,raw:po,side,p,edge,ev,tier:ppTier(edge,ev)}}
-function ppPlayers(){if(!PP)return [];const injOut=t=>{try{return injFor(t).L}catch(e){return []}};return PP.p.map(r=>{const g=PP.g[r[2]];const team=r[1]?g[1]:g[2],opp=r[1]?g[2]:g[1];const m={};PP.ord.forEach((k,i)=>{if(r[4][i]!=null)m[k]=r[4][i]});
+function ppPlayers(){if(!PP)return [];const injOut=t=>{try{return injFor(t).L}catch(e){return []}};return (PP.p||[]).filter(r=>PP.g&&PP.g[r[2]]).map(r=>{const g=PP.g[r[2]];const team=r[1]?g[1]:g[2],opp=r[1]?g[2]:g[1];const m={};PP.ord.forEach((k,i)=>{if(r[4][i]!=null)m[k]=r[4][i]});
   const inj=injOut(team).find(p=>nk(p.n)===nk(r[0]));return {name:r[0],team,opp,home:r[1],gi:r[2],pos:r[3],m,l5:r[5]||{},inj:inj?inj.st:null}})}
 function ppFmt(mk,v){if(v==null)return "—";if(mk==="atd")return Math.round(v*100)+"%";if(mk==="ptd"||mk==="rc")return (+v).toFixed(1);return Math.round(v)}
 function renderProps(){const L=$("ppList");if(!L)return;
@@ -1553,7 +1571,7 @@ let GS=Object.assign({},GS_DEF);try{const sv=JSON.parse(localStorage.getItem("lf
 try{setTimeout(()=>{try{applyLogoCls()}catch(e){}},0)}catch(e){}
 const saveGS=()=>{try{localStorage.setItem("lftg_gs",JSON.stringify(GS))}catch(e){}};
 let gsel="bestbet";
-const gopt={alt:false,game:"",conf:"SEC",arrows:true,betkind:"spread",field:"",ffo:"",title:"",kicker:"",sub:"",note:"",count:25,tile:"auto",rowMkt:true,rowLine:true,rowPick:true,showRank:true,showConf:true,upRadar:true,upWhy:true,ddCount:4,ddOnly:false,ddTrk:true,mtFilter:"all",mtOpp:true,mtPct:false,mtPrev:true,leans:false,cfpLines:true,rtCount:25,rtG6:false,pollSrc:"index",prCount:12,prWhat:"cfp",kyCount:4,pwShow:"all",pwRun:2,pwN:5,perImg:0,pgIdx:0,pgFor:"",kyP0:"",kyP1:"",kyP2:"",kyP3:"",kyP4:"",kyP5:"",vgCount:6,rcWeek:0,trTeam:"",plSet:"model",plFair:true,b25Rate:true,b25Tile:"white",b25Count:25,ppCount:5,ppMkG:"all",ppLean:false,ppPhoto:false};
+const gopt={alt:false,game:"",conf:"SEC",arrows:true,betkind:"spread",field:"",ffo:"",title:"",kicker:"",sub:"",note:"",count:25,tile:"auto",rowMkt:true,rowLine:true,rowPick:true,showRank:true,showMood:true,showConf:true,upRadar:true,upWhy:true,ddCount:4,ddOnly:false,ddTrk:true,mtFilter:"all",mtOpp:true,mtPct:false,mtPrev:true,leans:false,cfpLines:true,rtCount:25,rtG6:false,pollSrc:"index",prCount:12,prWhat:"cfp",kyCount:4,pwShow:"all",pwRun:2,pwN:5,perImg:0,pgIdx:0,pgFor:"",kyP0:"",kyP1:"",kyP2:"",kyP3:"",kyP4:"",kyP5:"",vgCount:6,rcWeek:0,trTeam:"",plSet:"model",plFair:true,b25Rate:true,b25Tile:"white",b25Count:25,ppCount:5,ppMkG:"all",ppLean:false,ppPhoto:false};
 function renderGfxTypes(){$("gfxTypes").innerHTML=GT.map(t=>`<button class="gt" data-t="${t.k}" aria-pressed="${gsel===t.k}"><b>${t.n}</b><span>${t.d}</span></button>`).join("")}
 $("gfxTypes").addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;gsel=b.dataset.t;gopt.title="";gopt.kicker="";gopt.sub="";renderGfxTypes();renderGfxOpts();renderStyle();queueBuild(0)});
 function liveBets(withLeans){const G=games().filter(isLive);const out=[];for(const g of G){if(g.tier==="Best Bet"||(withLeans&&g.tier==="Lean"))out.push({g,kind:"spread"});if(g.tot&&(g.tot.tier==="Best Bet"||(withLeans&&g.tot.tier==="Lean")))out.push({g,kind:"total"})}return out}
@@ -1574,7 +1592,7 @@ function renderGfxOpts(soft){if(soft&&document.activeElement&&($("gfxOpts").cont
      <label for="go-note">Extra line (optional)</label>${txt("go-note",gopt.note,"e.g. Lock of the week · 2 units")}`}
   else if(gsel==="matchup"){if(!gopt.game||(gopt.game!=="__hypo"&&!G.some(g=>g.id===gopt.game)))gopt.game=(G.find(isLive)||G[0]||{}).id||"";
     h=`<label for="go-game">Game</label><select id="go-game">${HYPO?`<option value="__hypo" ${gopt.game==="__hypo"?"selected":""}>Predictor: ${esc(HYPO.a)} vs ${esc(HYPO.h)}</option>`:""}${G.map(g=>`<option value="${esc(g.id)}" ${g.id===gopt.game?"selected":""}>${g.done?"(Final) ":""}${esc(g.a)} @ ${esc(g.h)}</option>`).join("")}</select>
-     <div class="ckrow">${chk("go-rowMkt",gopt.rowMkt,"Market / site row")}${chk("go-rowLine",gopt.rowLine,"LFTG line row")}${chk("go-rowPick",gopt.rowPick,"Model favorite + win %")}${chk("go-showRank",gopt.showRank,"Records & LFTG rank")}</div>
+     <div class="ckrow">${chk("go-rowMkt",gopt.rowMkt,"Market / site row")}${chk("go-rowLine",gopt.rowLine,"LFTG line row")}${chk("go-rowPick",gopt.rowPick,"Model favorite + win %")}${chk("go-showRank",gopt.showRank,"Records & LFTG rank")}${chk("go-showMood",gopt.showMood!==false,"Fan mood")}</div>
      <label for="go-note">Extra line (optional)</label>${txt("go-note",gopt.note,"e.g. Saturday 3:30 ET · CBS")}`}
   else if(gsel==="meter"){const L=mtList(gopt.mtFilter||"all",false);h=`<p class="small muted">${L.length} open games on the meter (${L.filter(x=>x.t<=1).length} in the top two rows). Move teams between rows on Bets → Upset Meter.</p><label for="go-mtFilter">Favorites</label>${sel("go-mtFilter",[["all","All games"],["cfp","CFP Top 25 favorites"],["p4","Power-conference favorites"]],gopt.mtFilter||"all")}<div class="ckrow">${chk("go-mtOpp",gopt.mtOpp!==false,"Show the underdog's logo")}${chk("go-mtPct",gopt.mtPct,"Show upset chance %")}${chk("go-mtPrev",gopt.mtPrev!==false,"Show last week's results by row")}</div>`}
   else if(gsel==="ddu"){const n=ddList(gopt.ddOnly).length;h=`<p class="small muted">${n} underdog${n===1?"":"s"} getting 10+ (${ddList(true).length} at 55%+ to cover). Tracker: ${esc(ddRec())} ATS.</p><label for="go-ddCount">How many</label>${sel("go-ddCount",[[3,"Top 3"],[4,"Top 4"],[5,"Top 5"],[6,"Top 6"],[8,"Top 8"]],String(gopt.ddCount||4))}<div class="ckrow">${chk("go-ddOnly",gopt.ddOnly,"Alerts only (55%+ to cover)")}${chk("go-ddTrk",gopt.ddTrk!==false,"Show the ATS tracker record")}</div>`}
@@ -1824,6 +1842,18 @@ const Phi=z=>.5*(1+erf(z/Math.SQRT2));function erf(x){const s=Math.sign(x);x=Mat
 const winp=m=>Phi(Math.abs(m)/15.5);
 const fmtv=v=>{const r=Math.round(v*2)/2;return r===0?"PK":"−"+(Math.abs(r)%1?Math.abs(r).toFixed(1):Math.abs(r))};
 
+function moodPill(c,t,x,y,h,align,maxW){if(gopt.showMood===false||typeof moodFor!=="function")return 0;const R=moodFor(t);if(!R)return 0;const [_,lab,emo,col]=moodOf(R.s);
+  const k1="FAN MOOD",k2=lab.toUpperCase(),k3=String(R.s);const fs=Math.round(h*.46),ks=Math.round(h*.3),es=Math.round(h*.56),pad=h*.42,gap=h*.22;
+  c.save();c.font="600 "+ks+"px Oswald";const w1=c.measureText(k1).width;c.font=es+"px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";const we=c.measureText(emo).width;c.font=fs+"px Anton";let w2=c.measureText(k2).width;const w3=c.measureText(k3).width;
+  let W=pad+w1+gap+we+gap*.6+w2+gap+w3+pad;if(maxW&&W>maxW){W=maxW;w2=Math.max(20,W-(pad+w1+gap+we+gap*.6+gap+w3+pad))}
+  const x0=align==="center"?x-W/2:align==="right"?x-W:x;rr(c,x0,y,W,h,h/2);c.fillStyle="rgba(6,8,14,.62)";c.fill();c.lineWidth=Math.max(2,h*.06);c.strokeStyle=col;c.stroke();
+  c.textBaseline="middle";let cx=x0+pad;c.font="600 "+ks+"px Oswald";c.fillStyle="rgba(255,255,255,.72)";c.letterSpacing="1px";c.fillText(k1,cx,y+h/2+1);c.letterSpacing="0px";cx+=w1+gap;
+  c.font=es+"px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";c.fillText(emo,cx,y+h/2+1);cx+=we+gap*.6;
+  c.font=fit(c,k2,"$px Anton",fs,w2)+"px Anton";c.fillStyle=col;c.fillText(k2,cx,y+h/2+2);cx+=w2+gap;c.font=fs+"px Anton";c.fillStyle="#fff";c.fillText(k3,cx,y+h/2+2);
+  c.textBaseline="alphabetic";c.restore();return W}
+function moodDot(c,t,cx,cy,r){if(gopt.showMood===false||typeof moodFor!=="function")return;const R=moodFor(t);if(!R)return;const [_,lab,emo,col]=moodOf(R.s);
+  c.save();c.beginPath();c.arc(cx,cy,r,0,7);c.fillStyle="rgba(6,8,14,.85)";c.shadowColor="rgba(0,0,0,.4)";c.shadowBlur=8;c.fill();c.shadowBlur=0;c.lineWidth=Math.max(2,r*.14);c.strokeStyle=col;c.stroke();
+  c.textAlign="center";c.textBaseline="middle";c.font=Math.round(r*1.05)+"px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";c.fillText(emo,cx,cy+r*.06);c.restore()}
 async function gMatch(c,g,best){if(dims().native)return gMatchWide(c,g,best);const {W,H}=dims();const ta=T(g.a),th=T(g.h);const yr=new Date(g.k||Date.now()).getFullYear();
   const cols=themeCols();setB(c,"bg");
   if(!cols&&!best){let gr=c.createLinearGradient(0,0,W/2,H);gr.addColorStop(0,shade(ta.c1,-.1));gr.addColorStop(1,shade(ta.c1,-.7));c.fillStyle=gr;c.fillRect(0,0,W/2,H);gr=c.createLinearGradient(W/2,0,W,H);gr.addColorStop(0,shade(th.c1,-.1));gr.addColorStop(1,shade(th.c1,-.7));c.fillStyle=gr;c.fillRect(W/2,0,W/2,H);c.fillStyle="rgba(0,0,0,.25)";c.fillRect(0,0,W,H);texture(c,W,H);c.fillStyle="rgba(255,255,255,.12)";c.fillRect(W/2-1,0,2,H)}
@@ -1847,7 +1877,8 @@ async function gMatch(c,g,best){if(dims().native)return gMatchWide(c,g,best);con
   const cw=(W-140-40)/2;
   for(const [i,n,s] of [[0,g.a,g.as||[]],[1,g.h,g.hs||[]]]){const x=70+i*(cw+40);const t=T(n);c.save();c.shadowColor="rgba(0,0,0,.45)";c.shadowBlur=30;c.shadowOffsetY=10;rr(c,x,top,cw,ch,34);const gr=c.createLinearGradient(x,top,x,top+ch);gr.addColorStop(0,shade(t.c1,.12));gr.addColorStop(1,shade(t.c1,-.35));c.fillStyle=gr;c.fill();c.restore();
     const nY=top+ch*(gopt.showRank?.78:.84),nS0=Math.min(58,ch*.11);const lb=await logoOrMono(c,n,x+cw/2,top+ch*.4,Math.min(cw*.72,ch*.52));c.fillStyle="#fff";c.textAlign="center";let ns=fit(c,n.toUpperCase(),"$px Anton",nS0,cw-48);if(lb&&nY-ns*.78<lb.y+lb.h+10)ns=Math.max(18,Math.min(ns,(nY-(lb.y+lb.h+10))/.78));c.font=ns+"px Anton";c.fillText(n.toUpperCase(),x+cw/2,nY);
-    if(gopt.showRank){const rs=fit(c,(s[2]||"")+(s[0]?"  ·  #"+s[0]+" LFTG":""),"$px Anton",Math.min(46,ch*.085,ns*.85),cw-48);c.font=rs+"px Anton";c.fillStyle="rgba(255,255,255,.7)";c.fillText((s[2]||"")+(s[0]?"  ·  #"+s[0]+" LFTG":""),x+cw/2,top+ch*.78+rs*1.25)}c.textAlign="left"}
+    if(gopt.showRank){const rs=fit(c,(s[2]||"")+(s[0]?"  ·  #"+s[0]+" LFTG":""),"$px Anton",Math.min(46,ch*.085,ns*.85),cw-48);c.font=rs+"px Anton";c.fillStyle="rgba(255,255,255,.7)";c.fillText((s[2]||"")+(s[0]?"  ·  #"+s[0]+" LFTG":""),x+cw/2,top+ch*.78+rs*1.25)}c.textAlign="left";
+    if(!best)moodPill(c,n,x+cw/2,top+Math.max(14,ch*.035),Math.max(30,Math.min(52,ch*.075)),"center",cw-28)}
   c.save();c.beginPath();c.arc(W/2,top+ch*.42,62,0,7);c.fillStyle="#fff";c.shadowColor="rgba(0,0,0,.4)";c.shadowBlur=16;c.fill();c.restore();c.fillStyle="#111";c.textAlign="center";c.font="52px Anton";c.fillText(g.n||g.site==="neutral"?"VS":"@",W/2,top+ch*.42+19);
   if(rows.length){const by=top+ch+gapB;c.save();rr(c,70,by,W-140,bh,30);c.fillStyle="rgba(5,8,12,.82)";c.fill();c.strokeStyle="rgba(255,255,255,.12)";c.lineWidth=2;c.stroke();c.restore();c.fillStyle=GS.gold==="#f5b800"?"#fff":GS.gold;c.fillRect(W/2-90,by-4,180,8);
     const lh=(bh-30)/rows.length;rows.forEach((r,i)=>{const s=fit(c,r.t,"$px Anton",r.s*(small?.85:1),W-220);c.font=s+"px Anton";c.fillStyle=r.conf?(r.conf===3?"#7ff0bf":r.conf===2?GS.gold:"rgba(255,255,255,.8)"):r.hi?(best?"#7ff0bf":"#fff"):r.dim?"rgba(255,255,255,.75)":"#fff";c.textAlign="center";c.fillText(r.t,W/2,by+15+lh*(i+.72))});c.textAlign="left";
@@ -1990,7 +2021,7 @@ async function kyCard(c,g,x,y,w,h){const A=T(g.a),Hh=T(g.h);const r=Math.min(26,
   c.save();rr(c,x,y,w,h,r);c.clip();const gr=c.createLinearGradient(x,0,x+w,0);gr.addColorStop(0,A.c1+"55");gr.addColorStop(.5,"rgba(0,0,0,0)");gr.addColorStop(1,Hh.c1+"55");c.fillStyle=gr;c.fillRect(x,y,w,h);
   c.fillStyle=A.c1;c.fillRect(x,y,8,h);c.fillStyle=Hh.c1;c.fillRect(x+w-8,y,8,h);c.restore();
   const pad=Math.max(18,h*.09);const ls=Math.min(h-2*pad-h*.16,w*(w<1100?.165:.2));const lyy=y+pad;const midW=ls*.5;
-  for(const [k,t] of [[0,g.a],[1,g.h]]){const lx=x+pad+8+k*(ls+midW);c.save();c.shadowColor="rgba(0,0,0,.4)";c.shadowBlur=12;rr(c,lx,lyy,ls,ls,ls*.12);c.fillStyle=teamFill(c,t,lx,lyy,ls,ls);c.fill();c.restore();c.save();rr(c,lx,lyy,ls,ls,ls*.12);c.clip();await logoOrMono(c,t,lx+ls/2,lyy+ls/2,ls*.8);c.restore();
+  for(const [k,t] of [[0,g.a],[1,g.h]]){const lx=x+pad+8+k*(ls+midW);c.save();c.shadowColor="rgba(0,0,0,.4)";c.shadowBlur=12;rr(c,lx,lyy,ls,ls,ls*.12);c.fillStyle=teamFill(c,t,lx,lyy,ls,ls);c.fill();c.restore();c.save();rr(c,lx,lyy,ls,ls,ls*.12);c.clip();await logoOrMono(c,t,lx+ls/2,lyy+ls/2,ls*.8);c.restore();moodDot(c,t,lx+ls-ls*.04,lyy+ls*.04,ls*.17);
     const rk=(k?g.hs:g.as)[0];c.font="700 "+Math.round(ls*.17)+"px Oswald";c.textAlign="center";c.fillStyle="rgba(255,255,255,.85)";c.fillText(`#${rk} · ${(k?g.hs:g.as)[2]}`,lx+ls/2,lyy+ls+ls*.2)}
   c.textAlign="center";c.fillStyle="rgba(255,255,255,.75)";c.font=Math.round(ls*.3)+"px Anton";c.fillText(g.n?"VS":"@",x+pad+8+ls+midW/2,lyy+ls*.6);
   const tx=x+pad+8+2*ls+midW+pad*1.2,tw=x+w-pad-8-tx;let ty=y+pad;c.textAlign="left";
@@ -2188,7 +2219,8 @@ async function gMatchWide(c,g,best){const {W,H}=dims();const ta=T(g.a),th=T(g.h)
     c.save();rr(c,x,top,cw,chh,34);c.strokeStyle="rgba(255,255,255,.14)";c.lineWidth=2;c.stroke();c.restore();
     await logoOrMono(c,n,x+cw/2,top+chh*.375,Math.min(250,chh*.57));
     c.fillStyle="#fff";c.textAlign="center";const ns=fit(c,n.toUpperCase(),"$px Anton",66,cw-60);c.font=ns+"px Anton";c.fillText(n.toUpperCase(),x+cw/2,top+chh*.807);
-    if(gopt.showRank!==false){const rl=(st[2]||"")+(st[0]?"  ·  #"+st[0]+" LFTG":"");const rs=fit(c,rl,"$px Oswald",34,cw-60);c.font="600 "+rs+"px Oswald";c.fillStyle="rgba(255,255,255,.75)";c.fillText(rl,x+cw/2,top+chh*.92)}c.textAlign="left"}
+    if(gopt.showRank!==false){const rl=(st[2]||"")+(st[0]?"  ·  #"+st[0]+" LFTG":"");const rs=fit(c,rl,"$px Oswald",34,cw-60);c.font="600 "+rs+"px Oswald";c.fillStyle="rgba(255,255,255,.75)";c.fillText(rl,x+cw/2,top+chh*.92)}c.textAlign="left";
+    if(!best)moodPill(c,n,i?x+cw-22:x+22,top+22,44,i?"right":"left",cw/2-150)}
   c.save();c.beginPath();c.arc(W/2,top+chh/2,68,0,7);c.fillStyle="#fff";c.shadowColor="rgba(0,0,0,.45)";c.shadowBlur=18;c.fill();c.restore();c.fillStyle="#111";c.textAlign="center";c.font="56px Anton";c.fillText(g.n||g.site==="neutral"?"VS":"@",W/2,top+chh/2+20);c.textAlign="left";
   if(g.final){c.font="44px Anton";c.fillStyle=GS.gold;c.textAlign="center";c.fillText(`FINAL: ${ta.abbr} ${g.final.ap} – ${th.abbr} ${g.final.hp}`,W/2,top-14);c.textAlign="left"}
   // info panel
@@ -2621,11 +2653,11 @@ async function lvWrite(){if(!DB){lvMsg("Not signed in: saved on this device only
 function lvPay(b){const o=+b.odds||-110;return b.r==="W"?b.u*(o>0?o/100:100/-o):b.r==="L"?-b.u:0}
 function lvGrade(){if(!LVLOG)return false;let ch=false;for(const b of LVLOG.bets){if(b.r)continue;const g=allGames().find(z=>String(z.id)===b.gid);if(!g||!g.final||g.final.hp==null)continue;const F=(+g.final.hp)-(+g.final.ap),Tt=(+g.final.hp)+(+g.final.ap);let v;
     if(b.type==="spread")v=(b.side==="h"?F:-F)+b.line;else v=b.side==="o"?Tt-b.line:b.line-Tt;b.r=v>0?"W":v<0?"L":"P";b.fs=`${g.final.ap}-${g.final.hp}`;ch=true}return ch}
-function renderLiveLog(fromSave){const el=$("lvLog");if(!el)return;if(!LVLOG)LVLOG={bets:[]};if(!fromSave&&lvGrade())lvSave();const B=LVLOG.bets;
+function renderLiveLog(fromSave){const el=$("lvLog");if(!el)return;if(!LVLOG)LVLOG={bets:[]};if(!fromSave&&lvGrade()&&!PUB)lvSave();const B=LVLOG.bets;
   const rec=A=>{const w=A.filter(b=>b.r==="W").length,l=A.filter(b=>b.r==="L").length,p=A.filter(b=>b.r==="P").length;return `${w}-${l}${p?"-"+p:""}`};const un=A=>A.reduce((s,b)=>s+lvPay(b),0);
   const J=B.filter(b=>b.ver==="Jump in"),O=B.filter(b=>b.ver!=="Jump in");
   $("lvTiles").innerHTML=`<div class="tile"><div class="k">Live record</div><div class="v">${rec(B)}</div><div class="s">${B.filter(b=>!b.r).length} pending</div></div><div class="tile"><div class="k">Units</div><div class="v" style="color:${un(B)>=0?"#2fd18a":"#e0283c"}">${clvS(un(B),2)}u</div></div><div class="tile"><div class="k">"Jump in" calls</div><div class="v">${rec(J)}</div><div class="s">${clvS(un(J),2)}u</div></div><div class="tile"><div class="k">Other live bets</div><div class="v">${rec(O)}</div><div class="s">${clvS(un(O),2)}u · bets the model didn't call</div></div>`;
-  el.innerHTML=B.slice().reverse().map((b,i)=>{const k=B.length-1-i;return `<tr><td>${esc(b.wk)}</td><td><b>${esc(b.label)}</b><div class="meta">${esc(b.game)} · entered ${esc(b.at)}</div></td><td>${esc(b.ver||"—")}<div class="meta">${b.p?Math.round(b.p*100)+"%":""}</div></td><td class="num">${esc(b.odds)} · ${esc(b.u)}u</td><td class="${b.r==="W"?"v-ok":b.r==="L"?"v-bad":""}">${b.r?esc(b.r)+(b.fs?`<div class="meta">${esc(b.fs)}</div>`:""):`<button type="button" class="pkx" data-lvr="${k}|W">W</button> <button type="button" class="pkx" data-lvr="${k}|L">L</button> <button type="button" class="pkx" data-lvr="${k}|P">P</button>`} <button type="button" class="pkx" data-lvdel="${k}" aria-label="Delete">×</button></td></tr>`}).join("")||`<tr><td colspan="5" class="muted">No live bets logged yet. Use “Log this bet” on a call above.</td></tr>`}
+  el.innerHTML=B.slice().reverse().map((b,i)=>{const k=B.length-1-i;return `<tr><td>${esc(b.wk)}</td><td><b>${esc(b.label)}</b><div class="meta">${esc(b.game)} · entered ${esc(b.at)}</div></td><td>${esc(b.ver||"—")}<div class="meta">${b.p?Math.round(b.p*100)+"%":""}</div></td><td class="num">${esc(b.odds)} · ${esc(b.u)}u</td><td class="${b.r==="W"?"v-ok":b.r==="L"?"v-bad":""}">${b.r?esc(b.r)+(b.fs?`<div class="meta">${esc(b.fs)}</div>`:""):(PUB?`<span class="muted">Pending</span>`:`<button type="button" class="pkx" data-lvr="${k}|W">W</button> <button type="button" class="pkx" data-lvr="${k}|L">L</button> <button type="button" class="pkx" data-lvr="${k}|P">P</button>`)} <button type="button" class="pkx" data-lvdel="${k}" aria-label="Delete">×</button></td></tr>`}).join("")||`<tr><td colspan="5" class="muted">No live bets logged yet. Use “Log this bet” on a call above.</td></tr>`}
 function lvInit(){const v=$("v-live");if(!v)return;
   $("lvGame").addEventListener("change",e=>{LV.gid=e.target.value;renderLive()});
   v.addEventListener("input",e=>{const id=e.target.id||"";if(!id.startsWith("lv-")||!LV.gid)return;const s=lvState(LV.gid),k=id.slice(3);s[k]=e.target.type==="checkbox"?e.target.checked:e.target.value;lvRenderOut()});
@@ -3085,7 +3117,7 @@ lvFeedInit();
 
 renderGfxTypes();renderGfxOpts();
 (async()=>{const timer=setTimeout(()=>{if(!games().length)$("loadmsg").textContent="Still loading. If this stays, open the page while signed in to claude.ai."},10000);
-  if(PUB){DB=staticDB();setTimeout(()=>{try{brandMark()}catch(e){}},0)}else{try{DB=await claude.use("db")}catch(e){DB=null}}
+  if(PUB){try{document.documentElement.classList.add("pub")}catch(e){}DB=staticDB();setTimeout(()=>{try{brandMark()}catch(e){}},0)}else{try{DB=await claude.use("db")}catch(e){DB=null}}
   if(!DB){clearTimeout(timer);$("loadmsg").textContent="The live data needs you to be signed in to claude.ai. Open this page from your Claude account.";return}
   try{ASSETS=await claude.use("assets")}catch(e){ASSETS=null}try{DL=await claude.use("downloads")}catch(e){DL=null}
   const dat=s=>s&&(typeof s.data==="function"?s.data():s.data);
@@ -3101,7 +3133,7 @@ renderGfxTypes();renderGfxOpts();
   try{DB.doc("live/lines").onSnapshot(snap=>{LIVEL=dat(snap)||null;renderAll();try{if(location.hash==="#lines")renderLines()}catch(e){}},()=>{})}catch(e){}
   try{DB.doc("live/grades").onSnapshot(snap=>{LVGR=dat(snap)||null},()=>{})}catch(e){}
   try{DB.doc("live/feed").onSnapshot(snap=>{LVFEED=dat(snap)||null;try{if($("v-live").classList.contains("on"))renderLive();else renderLiveBoard()}catch(e){}},()=>{})}catch(e){}
-  try{DB.doc("live/log").onSnapshot(snap=>{const d=dat(snap);if(LVT||LVSAVING)return;let loc=null;try{loc=JSON.parse(localStorage.getItem("lftgLiveLog")||"null")}catch(e){}const m=lvMerge(d,loc);const extra=m.bets.length>((d&&d.bets)||[]).length;LVLOG=m;try{renderLiveLog()}catch(e){}if(extra){lvMsg("Syncing bets saved on this device…");lvSave()}},()=>{})}catch(e){}
+  try{DB.doc("live/log").onSnapshot(snap=>{const d=dat(snap);if(LVT||LVSAVING)return;let loc=null;if(!PUB)try{loc=JSON.parse(localStorage.getItem("lftgLiveLog")||"null")}catch(e){}const m=PUB?(d&&d.bets?JSON.parse(JSON.stringify(d)):{bets:[]}):lvMerge(d,loc);const extra=!PUB&&m.bets.length>((d&&d.bets)||[]).length;LVLOG=m;try{renderLiveLog()}catch(e){}if(extra){lvMsg("Syncing bets saved on this device…");lvSave()}},()=>{})}catch(e){}
   try{DB.collection("pickem").onSnapshot(snap=>{const docs=Array.isArray(snap)?snap:(snap&&snap.docs)||[];docs.map(d=>dat(d)||d).forEach(x=>{if(x&&x.wk!=null){const k=pkKey(x.wk);if(!(pkT&&k===pkKey(pkWk())))PK[k]=x}});try{renderPickem()}catch(e){}},()=>{})}catch(e){}
   try{DB.collection("depth").onSnapshot(snap=>{const docs=Array.isArray(snap)?snap:(snap&&snap.docs)||[];S.depth={};docs.map(d=>dat(d)||d).forEach(x=>{if(x&&x.team)S.depth[x.team]=x});renderTeams()},()=>{})}catch(e){}
   try{DB.collection("games").onSnapshot(snap=>{const docs=Array.isArray(snap)?snap:(snap&&snap.docs)||[];S.games=docs.map(d=>dat(d)||d).filter(x=>x&&x.a);clearTimeout(timer);renderAll()},err=>{})}catch(e){}
