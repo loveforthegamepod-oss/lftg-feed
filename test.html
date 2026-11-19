@@ -2056,7 +2056,8 @@ function listLay(n,W,H,y0,bot,gap,maxRh,minRh){const WD=W>H*1.4;let cols=1;if(WD
 /* ---------- Sicko games of the week ---------- */
 const SKOPT=new Set(["Army","Navy","Air Force"]);
 function skRec(r){const m=/^(\d+)-(\d+)/.exec(String(r||""));return m?{w:+m[1],l:+m[2]}:null}
-function sickoOf(g){const tags=[];let sc=0;const add=(pts,e,t)=>{sc+=pts;tags.push({pts,e,t})};
+const SKCOL={"🌃":"#8b7cf6","🌙":"#3b82f6","🔥":"#f97316","🧱":"#94a3b8","❄️":"#7dd3fc","🌬️":"#67e8f9","🌧️":"#38bdf8","🥶":"#a5f3fc","🚽":"#b45309","🪙":"#f5b800","🎟️":"#2fd18a","🪖":"#84cc16","🚨":"#e0283c"};
+function sickoOf(g){const tags=[];let sc=0;const add=(pts,e,t)=>{sc+=pts;tags.push({pts,e,t,col:SKCOL[e]||"#fff"})};
   const t=Date.parse(g.k);const d=isNaN(t)?null:new Date(t);const et=d?new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",hour:"numeric",minute:"2-digit",hour12:false}).formatToParts(d):[];
   const wd=(et.find(x=>x.type==="weekday")||{}).value||"",hr=+((et.find(x=>x.type==="hour")||{}).value||12)%24,mn=+((et.find(x=>x.type==="minute")||{}).value||0);
   const mac=g.ac==="Mid-American"||g.hc==="Mid-American"||/^MAC$/i.test(g.ac||"")||/^MAC$/i.test(g.hc||"");
@@ -2084,8 +2085,8 @@ async function gSicko(c){let L=sickoList().slice(0,+gopt.skCount||8);L.sort((a,b
     const ttl=`${T(g.a).abbr} ${g.n?"VS":"@"} ${T(g.h).abbr}`.toUpperCase();const s1=fit(c,ttl,"$px Anton",Math.min(50,bh*.27),tw);c.font=s1+"px Anton";c.fillStyle="#fff";c.fillText(ttl,tx,y+bh*.3);
     let kk="";try{kk=new Date(g.k).toLocaleString("en-US",{weekday:"short",hour:"numeric",minute:"2-digit",timeZone:"America/New_York"}).toUpperCase()+" ET";if(/12:00 AM/.test(kk))kk=kk.replace(/,?\s*12:00 AM ET/," · TIME TBA")}catch(e){}
     const rec=`${(g.as||[])[2]||""}${(g.as||[])[2]&&(g.hs||[])[2]?" vs ":""}${(g.hs||[])[2]||""}`;const sub=[kk,rec].filter(Boolean).join("  ·  ");const s2=fit(c,sub,"600 $px Oswald",Math.min(24,bh*.14),tw);c.font="600 "+s2+"px Oswald";c.fillStyle="rgba(255,255,255,.7)";c.fillText(sub,tx,y+bh*.3+s2*1.45);
-    let cx=tx;const ch=Math.max(26,Math.min(40,bh*.2)),cy=y+bh*.3+s2*1.45+ch*.55;const fs=Math.round(ch*.5);for(const tg of tags.slice(0,3)){c.font=fs+"px "+EM;const ew=c.measureText(tg.e).width;c.font="600 "+fs+"px Oswald";const t2=tg.t.toUpperCase();let w2=c.measureText(t2).width;const cw=ch*.5+ew+ch*.25+w2+ch*.5;if(cx+cw>tx+tw)break;
-      c.save();rr(c,cx,cy,cw,ch,ch/2);c.fillStyle="rgba(255,255,255,.12)";c.fill();c.restore();c.textBaseline="middle";c.font=fs+"px "+EM;c.fillText(tg.e,cx+ch*.5,cy+ch/2+1);c.font="600 "+fs+"px Oswald";c.fillStyle="#fff";c.fillText(t2,cx+ch*.5+ew+ch*.25,cy+ch/2+1);c.textBaseline="alphabetic";cx+=cw+10}
+    let cx=tx;const ch=Math.max(26,Math.min(40,bh*.2)),cy=y+bh*.3+s2*1.45+ch*.55;const fs=Math.round(ch*.5);for(const tg of tags.slice(0,3)){c.font="700 "+fs+"px Oswald";const t2=tg.t.toUpperCase();const w2=c.measureText(t2).width;const dot=ch*.32;const cw=ch*.45+dot+ch*.28+w2+ch*.5;if(cx+cw>tx+tw)break;
+      c.save();rr(c,cx,cy,cw,ch,ch/2);c.fillStyle="rgba(255,255,255,.1)";c.fill();c.lineWidth=2;c.strokeStyle=tg.col;c.stroke();c.restore();c.beginPath();c.arc(cx+ch*.45+dot/2,cy+ch/2,dot/2,0,7);c.fillStyle=tg.col;c.fill();c.textBaseline="middle";c.font="700 "+fs+"px Oswald";c.fillStyle="#fff";c.fillText(t2,cx+ch*.45+dot+ch*.28,cy+ch/2+1);c.textBaseline="alphabetic";cx+=cw+10}
     const gx=X+bw0-22-mW/2,gy=y+bh/2;c.save();c.beginPath();c.arc(gx,gy-bh*.04,Math.min(mW,bh)*.36,0,7);c.fillStyle=sc>=60?GS.gold:"rgba(255,255,255,.14)";c.fill();c.restore();
     c.textAlign="center";const ns=Math.round(Math.min(mW,bh)*.32);c.font=ns+"px Anton";c.fillStyle=sc>=60?"#111":"#fff";c.fillText(String(sc),gx,gy-bh*.04+ns*.36);c.font="600 "+Math.round(Math.max(12,ns*.36))+"px Oswald";c.fillStyle="rgba(255,255,255,.65)";c.fillText("SICKO SCORE",gx,gy+Math.min(mW,bh)*.36+Math.max(14,ns*.42));c.textAlign="left"}
   chrome(c,W,H);return{W,H}}
