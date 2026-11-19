@@ -381,6 +381,9 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 .lvtick a.in .tkd{color:#ff6b6b;opacity:1;font-weight:700}
 .lvtick a.flash{animation:tkFlash 1.4s ease}
 @keyframes tkFlash{0%{background:rgba(255,215,0,.55)}100%{background:rgba(255,255,255,.06)}}
+.lvtick .tkpos{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ffd34d;margin-left:3px;vertical-align:middle}
+.lvsit{margin:4px 0 8px}
+.lvupd{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:999;background:#ffd34d;color:#1a1030;border:0;border-radius:999px;padding:10px 18px;font-weight:800;box-shadow:0 6px 24px rgba(0,0,0,.4);cursor:pointer}
 .lvtick .tklbl{flex:0 0 auto;align-self:center;font-size:11px;font-weight:800;letter-spacing:.08em;color:#ff6b6b}
 @media (prefers-reduced-motion:reduce){.lvtick a.flash{animation:none}}
 </style>
@@ -949,12 +952,12 @@ function d2Team(t){const T0=D2&&D2.teams&&D2.teams[t];if(!T0)return null;const M
   return{rows,T0,I,man:D2M[t],ST}}
 let LIVEBOX=null,D2LIVE=null;const D2SC={};
 const d2ln=n=>{const t=String(n||"").replace(/\b(jr|sr|ii|iii|iv|v)\.?$/i,"").replace(/,\s*$/,"").trim().split(/\s+/);return (t[t.length-1]||"").replace(/[^A-Za-z'-]/g,"").toLowerCase()};
-function d2LiveFor(t){const r0=d2LiveFor0(t);if(!r0)return r0;const E=espnFresh()&&ESPNL.g[String(r0.id)];if(E){r0.as=E.as;r0.hs=E.hs;r0.p=E.q;r0.c=E.clk;if(E.done)r0.st="F"}return r0}
+function d2LiveFor(t){const g=allGames().find(x=>(x.a===t||x.h===t)&&((espnFresh()&&ESPNL.g[String(x.id)]&&(!ESPNL.g[String(x.id)].done||Date.now()-ESPNL.g[String(x.id)].k<9*36e5))||(LIVEBOX&&LIVEBOX.g&&LIVEBOX.g[String(x.id)])));if(g){const B=liveB(String(g.id),g);if(B)return Object.assign({},B,{id:String(g.id),t,opp:g.a===t?g.h:g.a,P:B.pl[t]||{}})}return d2LiveFor0(t)}
 function d2LiveFor0(t){const B=LIVEBOX;if(!B||!B.g||!B.u||Date.now()-new Date(B.u).getTime()>6*3600e3)return null;for(const id in B.g){const g=B.g[id];if(g.a===t||g.h===t)return Object.assign({id,t,opp:g.a===t?g.h:g.a,P:(g.pl&&g.pl[t])||{}},g)}return null}
 function d2LiveLine(p){if(!D2LIVE||!p||!p.num)return null;const ln=d2ln(p.n);for(const k in D2LIVE.P){const [n,l]=k.split("|");if(n===String(p.num)&&l&&ln&&(l===ln||l.startsWith(ln)||ln.startsWith(l)))return D2LIVE.P[k]}return null}
 function d2LiveStrip(L){const me=L.tm&&L.tm[L.t]||{},op=L.tm&&L.tm[L.opp]||{};const my=L.a===L.t?L.as:L.hs,their=L.a===L.t?L.hs:L.as;const per=L.st==="F"?"FINAL":`Q${L.p||"?"} ${esc(L.c||"")}`;
   const it=[["Plays",me.pl],["Pass yds",me.py],["Rush yds",me.ry],["EPA/play",me.epa!=null?(me.epa>0?"+":"")+me.epa.toFixed(2):"—"],["Success",me.sr!=null?me.sr+"%":"—"],["Deserve to win",me.dw!=null?me.dw+"%":"—"]];
-  const sk=L.id+"|"+L.as+"|"+L.hs;const flash=D2SC[L.id]&&D2SC[L.id]!==sk;D2SC[L.id]=sk;return `<div class="card d2live${L.st==="F"?" fin":""}${flash?" scoreflash":""}"><div class="d2lvTop"><span class="livechip${L.st==="F"?" fin":""}">${L.st==="F"?"FINAL":"LIVE"}</span><b>${esc(L.t)} ${my??"–"}, ${esc(L.opp)} ${their??"–"}</b><span class="muted small">${per} · updated ${(()=>{const m=Math.max(0,Math.round((Date.now()-new Date(LIVEBOX.u).getTime())/60000));return m<1?"just now":m<60?m+" min ago":Math.round(m/60)+" hr ago"})()}</span></div><div class="tiles" style="grid-template-columns:repeat(auto-fit,minmax(96px,1fr));margin:8px 0 0">${it.map(([k,v])=>`<div class="tile" style="padding:8px 10px"><div class="k">${k}</div><div class="v" style="font-size:22px">${esc(v??"—")}</div></div>`).join("")}</div><div class="small muted" style="margin-top:4px">${esc(L.opp)}: ${op.py??"—"} pass · ${op.ry??"—"} rush · EPA/play ${op.epa!=null?(op.epa>0?"+":"")+op.epa.toFixed(2):"—"} · success ${op.sr!=null?op.sr+"%":"—"}. In-game player lines (LIVE) are built from the play-by-play every ~10 minutes; official box scores replace them after the game.</div></div>`}
+  const sk=L.id+"|"+L.as+"|"+L.hs;const flash=D2SC[L.id]&&D2SC[L.id]!==sk;D2SC[L.id]=sk;return `<div class="card d2live${L.st==="F"?" fin":""}${flash?" scoreflash":""}"><div class="d2lvTop"><span class="livechip${L.st==="F"?" fin":""}">${L.st==="F"?"FINAL":"LIVE"}</span><b>${esc(L.t)} ${my??"–"}, ${esc(L.opp)} ${their??"–"}</b><span class="muted small">${per} · updated ${(()=>{const m=Math.max(0,Math.round((Date.now()-new Date(L.u||LIVEBOX.u).getTime())/60000));return m<1?"just now":m<60?m+" min ago":Math.round(m/60)+" hr ago"})()}</span></div><div class="tiles" style="grid-template-columns:repeat(auto-fit,minmax(96px,1fr));margin:8px 0 0">${it.map(([k,v])=>`<div class="tile" style="padding:8px 10px"><div class="k">${k}</div><div class="v" style="font-size:22px">${esc(v??"—")}</div></div>`).join("")}</div><div class="small muted" style="margin-top:4px">${esc(L.opp)}: ${op.py??"—"} pass · ${op.ry??"—"} rush · EPA/play ${op.epa!=null?(op.epa>0?"+":"")+op.epa.toFixed(2):"—"} · success ${op.sr!=null?op.sr+"%":"—"}. ${L.src==="ESPN"?"Score, stats and in-game player lines (LIVE) update about every 40 seconds from the ESPN box score.":"In-game player lines (LIVE) are built from the play-by-play every ~10 minutes; official box scores replace them after the game."}</div></div>`}
 function d2Player(p,isB,r){if(!p)return `<div class="d2p"><b class="muted">—</b></div>`;const tags=[];if(p.isNew)tags.push('<span class="d2tag new" title="Not a starter in this group on last week\'s chart">NEW</span>');if(p.up)tags.push('<span class="d2tag up" title="Starter is out this week">↑ STARTING</span>');if(p.ed)tags.push('<span class="d2tag ed" title="Set by LFTG">LFTG</span>');if(!p.lw&&!p.ed)tags.push('<span class="d2tag dnp" title="Did not record a stat in his team\'s latest game">DNP last gm</span>');
   return `<div class="d2p${p.out?" out":""}${p.up?" up":""}"><b>${esc(p.n)}${p.num?` <span class="muted small">#${esc(p.num)}</span>`:""}${tags.join("")}</b><div class="meta">${p.season?`<span title="Season totals">${esc(p.season)}</span>`:esc(p.line||"")}${p.st?" "+stPill(p.st):""}</div>${p.season&&p.line?`<div class="meta" style="opacity:.7" title="Last three games">L3: ${esc(p.line)}</div>`:""}${(()=>{const lv=d2LiveLine(p);return lv?`<div class="meta d2lvl"><span class="livechip${D2LIVE.st==="F"?" fin":""}">${D2LIVE.st==="F"?"TODAY":"LIVE"}</span> ${esc(lv)}</div>`:""})()}</div>`}
 function d2Unit(rows,u,title,X){const R=rows.filter(r=>r.u===u);if(!R.length)return "";const own=!isViewer();
@@ -1055,8 +1058,8 @@ function bdRow(g,kind){{const ico=`<span class="ico">${badge(g.a)}${badge(g.h)}<
     if(kind==="u"){const u=g.ups;return `<button class="row" data-id="${esc(g.id||g.a+"|"+g.h)}">${ico}<span class="m">${esc(u.dog)} +${u.spread}</span><span class="r">index ${u.idx.toFixed(0)}%</span><span class="meta">vs ${esc(u.fav)} · Vegas ${u.vegas.toFixed(0)}% · ${kick(g.k)}</span><span>${upTag(u.tier)}</span></button>`}
     if(kind==="f"){const f=g.final||{};return `<button class="row" data-id="${esc(g.id||g.a+"|"+g.h)}">${ico}<span class="m">${esc(g.a)} <span class="score">${f.ap??""}</span> @ ${esc(g.h)} <span class="score">${f.hp??""}</span></span><span class="r"><span class="pill p-final">Final</span></span><span class="meta">Index: ${esc(favTxt(g,g.model))} · Market: ${esc(favTxt(g,g.mkt))}</span><span></span></button>`}
     const t=kind==="s"?g.tier:g.tot.tier;const bet=kind==="s"?`${esc(g.pick)} ${ln(g.line)}`:`${esc(g.tot.side)} ${g.tot.line}`;const e=kind==="s"?g.edge:g.tot.edge;
-    return `<button class="row" data-id="${esc(g.id||g.a+"|"+g.h)}">${ico}<span class="m">${bet}</span><span class="r">edge ${(+e).toFixed(1)}</span><span class="meta">${esc(g.a)} @ ${esc(g.h)} · ${kick(g.k)}</span><span>${pill(t)}${(kind==="s"?g.lm:g.tot.lm)?'<span class="lm">after line move</span>':""}${confPill(confOf(g,kind==="s"?"spread":"total"))}</span></button>`}}
-function muRow(g){return `<button class="row" data-id="${esc(g.id||g.a+"|"+g.h)}"><span class="ico">${badge(g.a)}${badge(g.h)}</span><span class="m">${esc(g.a)} @ ${esc(g.h)}</span><span class="r">${g.done?'<span class="pill p-final">Final</span>':kick(g.k)}</span><span class="meta">Index ${esc(favTxt(g,g.model))} · Market ${esc(favTxt(g,g.mkt))}</span><span>${g.done?"":pill(g.tier)}</span></button>`}
+    return `<button class="row" data-id="${esc(g.id||g.a+"|"+g.h)}">${ico}<span class="m">${bet}</span><span class="r">edge ${(+e).toFixed(1)}</span><span class="meta">${esc(g.a)} @ ${esc(g.h)} · ${liveTag(g)||kick(g.k)}</span><span>${pill(t)}${(kind==="s"?g.lm:g.tot.lm)?'<span class="lm">after line move</span>':""}${confPill(confOf(g,kind==="s"?"spread":"total"))}</span></button>`}}
+function muRow(g){return `<button class="row" data-id="${esc(g.id||g.a+"|"+g.h)}"><span class="ico">${badge(g.a)}${badge(g.h)}</span><span class="m">${esc(g.a)} @ ${esc(g.h)}</span><span class="r">${g.done?'<span class="pill p-final">Final</span>':(liveTag(g)||kick(g.k))}</span><span class="meta">Index ${esc(favTxt(g,g.model))} · Market ${esc(favTxt(g,g.mkt))}</span><span>${g.done?"":pill(g.tier)}</span></button>`}
 function renderMuList(){const q=$("muQ").value.trim().toLowerCase();let G=games();G.sort((x,y)=>(x.done-y.done)||String(x.k).localeCompare(String(y.k)));if(q)G=G.filter(g=>(g.a+" "+g.h).toLowerCase().includes(q));$("muList").innerHTML=G.map(muRow).join("")||`<div class="status">No games match.</div>`}
 function findGame(id){return allGames().find(x=>(x.id||x.a+"|"+x.h)===id)}
 function openMatchup(id){const g=findGame(id);if(!g)return;location.hash="matchups";
@@ -2883,7 +2886,7 @@ function lvTop(P){const o={qb:null,ru:null,re:null,tk:null};const nm=k=>{const [
     if((m=v.match(/(\d+) rec, (-?\d+) yds/))&&(!o.re||+m[2]>o.re.y))o.re={n:nm(k),y:+m[2],v};
     if((m=v.match(/([\d.]+) tkl/))&&(!o.tk||+m[1]>o.tk.y))o.tk={n:nm(k),y:+m[1],v}}
   return o}
-function lvDD(g,F,r){const id=String(g.id),open=LVDDO.has(id);const ta=T(g.a),th=T(g.h);const B=LIVEBOX&&LIVEBOX.g&&LIVEBOX.g[id];
+function lvDD(g,F,r){const id=String(g.id),open=LVDDO.has(id);const ta=T(g.a),th=T(g.h);const B=liveB(id,g);
   const vp=v=>v?`<span class="pill p-${v==="Jump in"?"bb":v==="Watch"?"lean":"pass"}">${v}</span>`:"";
   const pH=r.pH,pA=1-pH;const hF=Math.round((r.FT+r.M)/2),aF=Math.round((r.FT-r.M)/2);const fair=Math.abs(r.fairHS)<0.25?"Pick'em":(r.fairHS<0?`${th.abbr} −${snN(r.fairHS)}`:`${ta.abbr} −${snN(r.fairHS)}`);
   const sp=r.sp,tt=r.tt;
@@ -2894,9 +2897,9 @@ function lvDD(g,F,r){const id=String(g.id),open=LVDDO.has(id);const ta=T(g.a),th
       ${tt?`<div class="lvcall"><div><b>Total:</b> ${tt.side==="o"?"Over":"Under"} ${tt.L} ${vp(tt.ver&&tt.ver.v)}</div><div class="mxk">${Math.round(tt.p*100)}% · projected ${hfv(Math.round(r.FT*2)/2)} · ${esc(tt.ver&&tt.ver.why||"")}</div></div>`:`<div class="lvcall mxk">No live total posted right now.</div>`}</div>
     ${(r.notes||[]).slice(0,2).map(n=>`<div class="note small" style="margin-top:6px">${esc(n)}</div>`).join("")}</div>`;
   let stats;if(B){const tm=B.tm||{},A=tm[g.a]||{},H=tm[g.h]||{};const f=(x,d)=>x==null?"—":d?(x>0?"+":"")+x.toFixed(2):x;
-    const rows=[["Plays",A.pl,H.pl],["Pass yds",A.py,H.py],["Rush yds",A.ry,H.ry],["EPA / play",f(A.epa,1),f(H.epa,1)],["Success rate",A.sr!=null?A.sr+"%":"—",H.sr!=null?H.sr+"%":"—"],["Explosiveness",A.x??"—",H.x??"—"],["Deserve to win",A.dw!=null?A.dw+"%":"—",H.dw!=null?H.dw+"%":"—"]];
+    const rows=[["Plays",A.pl,H.pl],...(A.ty!=null?[["Total yds",A.ty,H.ty]]:[]),["Pass yds",A.py,H.py],["Rush yds",A.ry,H.ry],...(A.fd!=null?[["First downs",A.fd,H.fd],["3rd down",A.d3,H.d3],["Turnovers",A.to,H.to],["Possession",A.top,H.top]]:[]),["EPA / play",f(A.epa,1),f(H.epa,1)],["Success rate",A.sr!=null?A.sr+"%":"—",H.sr!=null?H.sr+"%":"—"],["Explosiveness",A.x??"—",H.x??"—"],["Deserve to win",A.dw!=null?A.dw+"%":"—",H.dw!=null?H.dw+"%":"—"]];
     const top=t=>{const o=lvTop(B.pl&&B.pl[t]);return [["QB",o.qb],["Rush",o.ru],["Rec",o.re],["Tackles",o.tk]].filter(x=>x[1]).map(([k,x])=>`<div class="lvpl"><span class="mxk">${k}</span> <b>${esc(x.n)}</b> <span class="mxk">${esc(x.v)}</span></div>`).join("")||`<div class="mxk">No player lines yet.</div>`};
-    stats=`<div class="lvsec"><div class="lvst">Live stats <span class="livechip${B.st==="F"?" fin":""}">${B.st==="F"?"FINAL":"LIVE"}</span> <span class="mxk">${B.st==="F"?"":`Q${B.p||"?"} ${esc(B.c||"")} · `}play-by-play as of ${(()=>{const m=Math.max(0,Math.round((Date.now()-new Date(LIVEBOX.u).getTime())/60000));return m<1?"just now":m+" min ago"})()}</span></div>
+    stats=`<div class="lvsec"><div class="lvst">Live stats <span class="livechip${B.st==="F"?" fin":""}">${B.st==="F"?"FINAL":"LIVE"}</span> <span class="mxk">${B.st==="F"?"":`Q${B.p||"?"} ${esc(B.c||"")} · `}${B.src} stats as of ${(()=>{const m=Math.max(0,Math.round((Date.now()-new Date(B.u).getTime())/60000));return m<1?"just now":m+" min ago"})()}</span></div>${B.sit&&B.st!=="F"?`<div class="mxk lvsit">${B.sit.pos?`<b>${esc(T(B.sit.pos).abbr)} ball</b> · `:""}${esc(B.sit.dd||"")}${B.sit.rz?` · <b style="color:#ff6b6b">red zone</b>`:""}${B.sit.lp?`<br>Last play: ${esc(B.sit.lp)}`:""}</div>`:""}
       <div class="tablebox"><table class="lvtab"><thead><tr><th></th><th class="num">${badge(g.a)} ${esc(ta.abbr)}</th><th class="num">${badge(g.h)} ${esc(th.abbr)}</th></tr></thead><tbody><tr><td><b>Score</b></td><td class="num"><b>${F.rt?F.as:(B.as??F.as)}</b></td><td class="num"><b>${F.rt?F.hs:(B.hs??F.hs)}</b></td></tr>${rows.map(([k,a,h])=>`<tr><td>${k}</td><td class="num">${esc(String(a??"—"))}</td><td class="num">${esc(String(h??"—"))}</td></tr>`).join("")}</tbody></table></div>
       <div class="mxsides"><div class="mxside"><div class="mxtn">${badge(g.a)}<b>${esc(g.a)}</b></div>${top(g.a)}</div><div class="mxside"><div class="mxtn">${badge(g.h)}<b>${esc(g.h)}</b></div>${top(g.h)}</div></div></div>`}
   else stats=`<div class="lvsec"><div class="lvst">Live stats</div><div class="mxk">Box score and player lines appear once the play-by-play loads (refreshes about every 10 minutes during games).</div></div>`;
@@ -2923,7 +2926,8 @@ async function espnPoll(){if(ESPNOK===false)return;const R=espnRev();if(!R)retur
     if(!g)continue;const sw=g.h!==hn&&g.a!==an;
     const hs=+((sw?A:H).score)||0,as=+((sw?H:A).score)||0;
     const done=!!st.completed||st.state==="post";const det=String(st.shortDetail||st.detail||"");
-    out[String(g.id)]={as,hs,q:c.status.period||1,clk:c.status.displayClock||"",half:/half/i.test(det)||st.name==="STATUS_HALFTIME",done,det,k:kt}}
+    const si=c.situation||null;const pn=si&&si.possession?R[String(si.possession)]||(String(si.possession)===String(H.team.id)?(sw?g.a:g.h):String(si.possession)===String(A.team.id)?(sw?g.h:g.a):null):null;
+    out[String(g.id)]={as,hs,q:c.status.period||1,clk:c.status.displayClock||"",half:/half/i.test(det)||st.name==="STATUS_HALFTIME",done,det,k:kt,eid:String(ev.id),sit:si&&!done?{dd:si.downDistanceText||si.shortDownDistanceText||"",pos:pn,rz:!!si.isRedZone,lp:si.lastPlay&&si.lastPlay.text||""}:null}}
   ESPNL={u:Date.now(),g:out};espnRender()}
 function espnFresh(){return ESPNL.u&&Date.now()-ESPNL.u<5*60e3}
 function espnMerge(){if(!espnFresh())return;const E=ESPNL.g;if(!Object.keys(E).length)return;
@@ -2934,11 +2938,48 @@ function espnTicker(){const el=$("lvTicker");if(!el)return;const E=ESPNL.g;const
   L.sort((a,b)=>(a.e.done?1:0)-(b.e.done?1:0)||a.e.k-b.e.k);const nIn=L.filter(x=>!x.e.done).length;
   el.innerHTML=(nIn?`<span class="tklbl">LIVE</span>`:"")+L.map(({id,e,g})=>{const sk=e.as+"-"+e.hs;const fl=ESPNSC[id]&&ESPNSC[id]!==sk;ESPNSC[id]=sk;
     const d=e.done?"Final":e.half?"Half":e.det||("Q"+e.q+" "+e.clk);
-    return `<a href="#live" class="${e.done?"fin":"in"}${fl?" flash":""}" data-tkid="${esc(id)}" title="${esc(g.a)} at ${esc(g.h)}">${badge(g.a)}<b>${esc(T(g.a).abbr)}</b> ${e.as} <span class="muted">·</span> ${badge(g.h)}<b>${esc(T(g.h).abbr)}</b> ${e.hs} <span class="tkd">${esc(d)}</span></a>`}).join("");
+    return `<a href="#live" class="${e.done?"fin":"in"}${fl?" flash":""}" data-tkid="${esc(id)}" title="${esc(g.a)} at ${esc(g.h)}">${badge(g.a)}<b>${esc(T(g.a).abbr)}</b>${e.sit&&e.sit.pos===g.a?"<i class=\"tkpos\" title=\"has the ball\"></i>":""} ${e.as} <span class="muted">·</span> ${badge(g.h)}<b>${esc(T(g.h).abbr)}</b>${e.sit&&e.sit.pos===g.h?"<i class=\"tkpos\" title=\"has the ball\"></i>":""} ${e.hs} <span class="tkd">${esc(d)}</span></a>`}).join("");
   el.hidden=false}
-function espnRender(){espnMerge();espnTicker();try{if($("v-live")&&$("v-live").classList.contains("on")){renderLiveBoard();lvApplyFeed()}if(location.hash==="#depth"&&typeof renderDepth==="function")renderDepth()}catch(e){}}
+let ESPNSIG="";function espnRender(){espnMerge();espnTicker();const sg=Object.entries(ESPNL.g).map(([k,e])=>k+e.as+"-"+e.hs+e.done).join();const chg=sg!==ESPNSIG;ESPNSIG=sg;try{if(chg&&$("v-board")&&$("v-board").classList.contains("on")&&typeof renderBoard==="function")renderBoard();if(chg&&$("v-matchups")&&$("v-matchups").classList.contains("on")&&typeof renderMuList==="function"&&$("muQ")&&document.activeElement!==$("muQ"))renderMuList();}catch(e){}try{if($("v-live")&&$("v-live").classList.contains("on")){renderLiveBoard();lvApplyFeed()}if(location.hash==="#depth"&&typeof renderDepth==="function")renderDepth()}catch(e){}}
 function espnLoop(){const anyLive=Object.values(ESPNL.g).some(e=>!e.done);const soon=allGames().some(g=>{const k=new Date(g.k).getTime();return !g.done&&k-Date.now()<15*60e3&&Date.now()-k<6*36e5});
-  espnPoll().finally(()=>setTimeout(espnLoop,(anyLive||soon)?30e3:5*60e3))}
+  espnPoll().then(espnBoxCycle).finally(()=>setTimeout(espnLoop,(anyLive||soon)?30e3:5*60e3))}
+document.addEventListener("toggle",e=>{const d=e.target;if(d&&d.classList&&d.classList.contains("lvdd")&&d.open){const id=d.dataset.lvdd;if(ESPNL.g[id]&&(!ESPNBT[id]||Date.now()-ESPNBT[id]>15e3)){ESPNBT[id]=Date.now();espnBox(id).then(()=>{try{renderLiveBoard()}catch(x){}})}}},true);
+const ESPNBOX={};
+function espnStatMap(t){const m={};for(const x of t.statistics||[])m[x.name]=x.displayValue;return m}
+async function espnBox(gid){const e=ESPNL.g[gid];if(!e||!e.eid)return;const g=allGames().find(x=>String(x.id)===gid);if(!g)return;const R=espnRev()||{};
+  try{const r=await fetch("https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event="+e.eid+"&_="+Math.floor(Date.now()/20000),{cache:"no-store"});if(!r.ok)return;const j=await r.json();const bx=j.boxscore||{};
+    const nm=(id,ha)=>R[String(id)]||(ha==="home"?g.h:g.a);const tm={},pl={};
+    for(const t of bx.teams||[]){const n=nm(t.team.id,t.homeAway);const m=espnStatMap(t);const ca=String(m.completionAttempts||"").split("/");
+      tm[n]={py:+m.netPassingYards||0,ry:+m.rushingYards||0,pl:(+m.rushingAttempts||0)+(+ca[1]||0),ty:+m.totalYards||0,fd:m.firstDowns,d3:m.thirdDownEff,to:m.turnovers,top:m.possessionTime,pen:m.totalPenaltiesYards}}
+    for(const t of bx.players||[]){const n=nm(t.team.id,t.homeAway||((bx.teams||[]).find(x=>x.team.id===t.team.id)||{}).homeAway);const P={};
+      for(const c of t.statistics||[]){const L=c.labels||[];const ix=k=>L.indexOf(k);
+        for(const a of c.athletes||[]){const at=a.athlete||{};const key=(at.jersey||"")+"|"+d2ln(at.displayName);const v=a.stats||[];let str=null;
+          if(c.name==="passing"){const ca=v[ix("C/ATT")]||"";const[cm,att]=ca.split("/");str=`${cm}/${att}, ${v[ix("YDS")]} yds${+v[ix("TD")]?", "+v[ix("TD")]+" TD":""}${+v[ix("INT")]?", "+v[ix("INT")]+" INT":""}`}
+          else if(c.name==="rushing")str=`${v[ix("CAR")]} car, ${v[ix("YDS")]} yds${+v[ix("TD")]?", "+v[ix("TD")]+" TD":""}`;
+          else if(c.name==="receiving")str=`${v[ix("REC")]} rec, ${v[ix("YDS")]} yds${+v[ix("TD")]?", "+v[ix("TD")]+" TD":""}`;
+          else if(c.name==="defensive"){const tk=+v[ix("TOT")]||0,sk=+v[ix("SACKS")]||0;if(tk||sk)str=`${tk} tkl${sk?", "+sk+" sk":""}`}
+          else if(c.name==="interceptions"&&+v[ix("INT")])str=`${v[ix("INT")]} INT`;
+          if(str)P[key]=P[key]?P[key]+" · "+str:str}}
+      pl[n]=P}
+    ESPNBOX[gid]={u:Date.now(),tm,pl}}catch(err){}}
+function liveB(id,g){const L=LIVEBOX&&LIVEBOX.g&&LIVEBOX.g[id];const lf=L&&LIVEBOX.u&&Date.now()-new Date(LIVEBOX.u).getTime()<6*36e5;
+  const X=ESPNBOX[id]&&Date.now()-ESPNBOX[id].u<15*60e3?ESPNBOX[id]:null;const E=espnFresh()?ESPNL.g[id]:null;if(!lf&&!X)return null;
+  const B=Object.assign({a:g.a,h:g.h},lf?L:{});B.tm={};B.pl={};
+  for(const t of [g.a,g.h]){B.tm[t]=Object.assign({},lf&&L.tm&&L.tm[t]||{},X&&X.tm[t]||{});B.pl[t]=X&&X.pl[t]&&Object.keys(X.pl[t]).length?X.pl[t]:(lf&&L.pl&&L.pl[t]||{})}
+  if(E){B.as=E.as;B.hs=E.hs;B.p=E.q;B.c=E.clk;B.st=E.done?"F":(B.st==="F"?"L":B.st||"L");B.sit=E.sit;B.det=E.det}
+  B.u=X?new Date(X.u).toISOString():LIVEBOX.u;B.src=X?"ESPN":"play-by-play";return B}
+let ESPNBT={};
+async function espnBoxCycle(){if(document.hidden||!espnFresh())return;const ids=new Set();const on=id=>$(id)&&$(id).classList.contains("on");
+  for(const id in ESPNL.g){const e=ESPNL.g[id];const recent=!e.done||(ESPNBOX[id]?Date.now()-e.k<5*36e5&&!ESPNBOX[id].fin:Date.now()-e.k<9*36e5);if(!recent)continue;
+    const g=allGames().find(x=>String(x.id)===id);if(!g)continue;
+    if(on("v-live")||LVDDO.has(id)||(location.hash==="#depth"&&typeof D2T!=="undefined"&&(g.a===D2T||g.h===D2T)))ids.add(id)}
+  const L=[...ids].filter(id=>!ESPNBT[id]||Date.now()-ESPNBT[id]>40e3).slice(0,16);if(!L.length)return;
+  for(const id of L)ESPNBT[id]=Date.now();
+  for(let i=0;i<L.length;i+=6)await Promise.all(L.slice(i,i+6).map(espnBox));
+  for(const id of L){const e=ESPNL.g[id];if(e&&e.done&&ESPNBOX[id])ESPNBOX[id].fin=1}
+  espnRender()}
+function liveTag(g){const e=espnFresh()&&ESPNL.g[String(g.id)];if(!e||g.done)return null;
+  return e.done?`<span class="pill p-final">Final ${e.as}–${e.hs}</span>`:`<span class="livechip">LIVE</span> <b>${e.as}–${e.hs}</b> <span class="muted">${esc(e.half?"Half":e.det||("Q"+e.q))}</span>`}
 document.addEventListener("click",e=>{const a=e.target.closest("[data-tkid]");if(a){LV.gid=a.dataset.tkid;setTimeout(()=>{try{renderLive()}catch(x){}},50)}});
 function lvFeedInit(){const v=$("v-live");if(!v)return;
   v.addEventListener("click",e=>{const b=e.target.closest("[data-lvpick]");if(b){LV.gid=b.dataset.lvpick;renderLive();$("lvCalc").scrollIntoView({behavior:"smooth",block:"start"});return}
@@ -2948,6 +2989,9 @@ function lvFeedInit(){const v=$("v-live");if(!v)return;
 function lvAutoTag(){const el=$("lvAuto");if(!el||!LV.gid)return;const F=LVFEED&&LVFEED.g&&LVFEED.g[LV.gid];const s=lvState(LV.gid);
   el.innerHTML=!F||F.done?"":s.auto===false?`Manual numbers · <button type="button" class="pkx" data-lvauto="1">Back to live feed</button>`:`<span style="color:var(--good)">●</span> Live feed: score, line and total fill in automatically${F.book?` (${F.book==="draftkings"?"DraftKings":"FanDuel"})`:""}. Clock is estimated; fix it if it's off.`}
 lvFeedInit();
+(function siteUpd(){if(!PUB)return;let base=null;async function chk(){try{const r=await fetch(location.pathname+"?_v="+Date.now(),{cache:"no-store"});if(!r.ok)return;const t=await r.text();let h=0;for(let i=0;i<t.length;i+=7)h=(h*31+t.charCodeAt(i))|0;if(base==null){base=h;return}
+  if(h!==base){if(document.hidden){location.reload();return}if(!document.getElementById("lvUpd")){const b=document.createElement("button");b.id="lvUpd";b.className="lvupd";b.textContent="New update — tap to refresh";b.onclick=()=>location.reload();document.body.appendChild(b)}}}catch(e){}}
+  chk();setInterval(chk,5*60e3);document.addEventListener("visibilitychange",()=>{if(!document.hidden)chk()})})();
 (function espnStart(){if(S&&S.espn&&S.espn.t&&typeof allGames==="function"&&allGames().length){espnLoop()}else setTimeout(espnStart,1500)})();
 
 
