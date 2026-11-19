@@ -373,6 +373,16 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 .lvtab th .tb{width:20px;height:20px;vertical-align:-5px}.lvtab td,.lvtab th{padding:5px 9px}
 .lvcalls{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.lvcall{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04)}
 .lvpl{font-size:13px;padding:2px 0}
+.lvtick{display:flex;gap:8px;overflow-x:auto;padding:8px 14px;scrollbar-width:none;background:color-mix(in srgb,var(--bg,#120a2a) 88%,#000);border-bottom:1px solid rgba(255,255,255,.08)}
+.lvtick::-webkit-scrollbar{display:none}
+.lvtick a{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.06);color:inherit;text-decoration:none;font-size:12px;white-space:nowrap;transition:background .2s}
+.lvtick a:hover{background:rgba(255,255,255,.12)}
+.lvtick a .tkd{opacity:.7;font-size:11px}
+.lvtick a.in .tkd{color:#ff6b6b;opacity:1;font-weight:700}
+.lvtick a.flash{animation:tkFlash 1.4s ease}
+@keyframes tkFlash{0%{background:rgba(255,215,0,.55)}100%{background:rgba(255,255,255,.06)}}
+.lvtick .tklbl{flex:0 0 auto;align-self:center;font-size:11px;font-weight:800;letter-spacing:.08em;color:#ff6b6b}
+@media (prefers-reduced-motion:reduce){.lvtick a.flash{animation:none}}
 </style>
 </head>
 <body class="viewer">
@@ -388,6 +398,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   <a href="#record" data-v="record"><svg viewBox="0 0 24 24"><path d="M4 13l5 5L20 7"/></svg>Record</a>
   <a href="#method" data-v="method"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.5"/></svg>Method</a>
 </nav>
+<div id="lvTicker" class="lvtick" hidden></div>
 <main>
   <div id="loadmsg" class="status">Loading the latest model data…</div>
 
@@ -938,7 +949,8 @@ function d2Team(t){const T0=D2&&D2.teams&&D2.teams[t];if(!T0)return null;const M
   return{rows,T0,I,man:D2M[t],ST}}
 let LIVEBOX=null,D2LIVE=null;const D2SC={};
 const d2ln=n=>{const t=String(n||"").replace(/\b(jr|sr|ii|iii|iv|v)\.?$/i,"").replace(/,\s*$/,"").trim().split(/\s+/);return (t[t.length-1]||"").replace(/[^A-Za-z'-]/g,"").toLowerCase()};
-function d2LiveFor(t){const B=LIVEBOX;if(!B||!B.g||!B.u||Date.now()-new Date(B.u).getTime()>6*3600e3)return null;for(const id in B.g){const g=B.g[id];if(g.a===t||g.h===t)return Object.assign({id,t,opp:g.a===t?g.h:g.a,P:(g.pl&&g.pl[t])||{}},g)}return null}
+function d2LiveFor(t){const r0=d2LiveFor0(t);if(!r0)return r0;const E=espnFresh()&&ESPNL.g[String(r0.id)];if(E){r0.as=E.as;r0.hs=E.hs;r0.p=E.q;r0.c=E.clk;if(E.done)r0.st="F"}return r0}
+function d2LiveFor0(t){const B=LIVEBOX;if(!B||!B.g||!B.u||Date.now()-new Date(B.u).getTime()>6*3600e3)return null;for(const id in B.g){const g=B.g[id];if(g.a===t||g.h===t)return Object.assign({id,t,opp:g.a===t?g.h:g.a,P:(g.pl&&g.pl[t])||{}},g)}return null}
 function d2LiveLine(p){if(!D2LIVE||!p||!p.num)return null;const ln=d2ln(p.n);for(const k in D2LIVE.P){const [n,l]=k.split("|");if(n===String(p.num)&&l&&ln&&(l===ln||l.startsWith(ln)||ln.startsWith(l)))return D2LIVE.P[k]}return null}
 function d2LiveStrip(L){const me=L.tm&&L.tm[L.t]||{},op=L.tm&&L.tm[L.opp]||{};const my=L.a===L.t?L.as:L.hs,their=L.a===L.t?L.hs:L.as;const per=L.st==="F"?"FINAL":`Q${L.p||"?"} ${esc(L.c||"")}`;
   const it=[["Plays",me.pl],["Pass yds",me.py],["Rush yds",me.ry],["EPA/play",me.epa!=null?(me.epa>0?"+":"")+me.epa.toFixed(2):"—"],["Success",me.sr!=null?me.sr+"%":"—"],["Deserve to win",me.dw!=null?me.dw+"%":"—"]];
@@ -2861,7 +2873,7 @@ pgInit();
 let LVFEED=null;
 function lvFeedState(F,base){const s=Object.assign({},base||{});s.as=F.as;s.hs=F.hs;s.q=F.q;s.clk=F.clk;if(F.sp){const h=+F.sp.h;s.fav=Math.abs(h)<0.25?"pk":h<0?"h":"a";s.sp=String(Math.abs(h))}if(F.tot)s.tot=String(F.tot.pt);return s}
 function lvAge(){if(!LVFEED||!LVFEED.u)return null;return (Date.now()-new Date(LVFEED.u).getTime())/60e3}
-function lvApplyFeed(){if(!LVFEED||!LV.gid)return;const F=LVFEED.g&&LVFEED.g[LV.gid];if(!F||F.done)return;const s=lvState(LV.gid);if(s.auto===false)return;const n=lvFeedState(F,s);Object.assign(s,n);
+function lvApplyFeed(){espnMerge();if(!LVFEED||!LV.gid)return;const F=LVFEED.g&&LVFEED.g[LV.gid];if(!F||F.done)return;const s=lvState(LV.gid);if(s.auto===false)return;const n=lvFeedState(F,s);Object.assign(s,n);
   for(const k of ["as","hs","q","clk","fav","sp","tot"]){const e=$("lv-"+k);if(e&&document.activeElement!==e&&e.value!==String(s[k]??""))e.value=s[k]??""}}
 /* ---------- live board: per-game dropdown (live stats + model) ---------- */
 const LVDDO=new Set();
@@ -2885,18 +2897,49 @@ function lvDD(g,F,r){const id=String(g.id),open=LVDDO.has(id);const ta=T(g.a),th
     const rows=[["Plays",A.pl,H.pl],["Pass yds",A.py,H.py],["Rush yds",A.ry,H.ry],["EPA / play",f(A.epa,1),f(H.epa,1)],["Success rate",A.sr!=null?A.sr+"%":"—",H.sr!=null?H.sr+"%":"—"],["Explosiveness",A.x??"—",H.x??"—"],["Deserve to win",A.dw!=null?A.dw+"%":"—",H.dw!=null?H.dw+"%":"—"]];
     const top=t=>{const o=lvTop(B.pl&&B.pl[t]);return [["QB",o.qb],["Rush",o.ru],["Rec",o.re],["Tackles",o.tk]].filter(x=>x[1]).map(([k,x])=>`<div class="lvpl"><span class="mxk">${k}</span> <b>${esc(x.n)}</b> <span class="mxk">${esc(x.v)}</span></div>`).join("")||`<div class="mxk">No player lines yet.</div>`};
     stats=`<div class="lvsec"><div class="lvst">Live stats <span class="livechip${B.st==="F"?" fin":""}">${B.st==="F"?"FINAL":"LIVE"}</span> <span class="mxk">${B.st==="F"?"":`Q${B.p||"?"} ${esc(B.c||"")} · `}play-by-play as of ${(()=>{const m=Math.max(0,Math.round((Date.now()-new Date(LIVEBOX.u).getTime())/60000));return m<1?"just now":m+" min ago"})()}</span></div>
-      <div class="tablebox"><table class="lvtab"><thead><tr><th></th><th class="num">${badge(g.a)} ${esc(ta.abbr)}</th><th class="num">${badge(g.h)} ${esc(th.abbr)}</th></tr></thead><tbody><tr><td><b>Score</b></td><td class="num"><b>${B.as??F.as}</b></td><td class="num"><b>${B.hs??F.hs}</b></td></tr>${rows.map(([k,a,h])=>`<tr><td>${k}</td><td class="num">${esc(String(a??"—"))}</td><td class="num">${esc(String(h??"—"))}</td></tr>`).join("")}</tbody></table></div>
+      <div class="tablebox"><table class="lvtab"><thead><tr><th></th><th class="num">${badge(g.a)} ${esc(ta.abbr)}</th><th class="num">${badge(g.h)} ${esc(th.abbr)}</th></tr></thead><tbody><tr><td><b>Score</b></td><td class="num"><b>${F.rt?F.as:(B.as??F.as)}</b></td><td class="num"><b>${F.rt?F.hs:(B.hs??F.hs)}</b></td></tr>${rows.map(([k,a,h])=>`<tr><td>${k}</td><td class="num">${esc(String(a??"—"))}</td><td class="num">${esc(String(h??"—"))}</td></tr>`).join("")}</tbody></table></div>
       <div class="mxsides"><div class="mxside"><div class="mxtn">${badge(g.a)}<b>${esc(g.a)}</b></div>${top(g.a)}</div><div class="mxside"><div class="mxtn">${badge(g.h)}<b>${esc(g.h)}</b></div>${top(g.h)}</div></div></div>`}
   else stats=`<div class="lvsec"><div class="lvst">Live stats</div><div class="mxk">Box score and player lines appear once the play-by-play loads (refreshes about every 10 minutes during games).</div></div>`;
   return `<details class="mxdd mxrow lvdd" data-lvdd="${esc(id)}"${open?" open":""}><summary><span>Live stats &amp; model</span></summary><div class="mxb">${stats}${model}<div class="mxact"><button type="button" class="btn primary" data-lvpick="${esc(id)}">Open in calculator</button><button type="button" class="btn" data-mxopen="${esc(id)}">Full matchup →</button></div></div></details>`}
 document.addEventListener("toggle",e=>{const d=e.target;if(d&&d.classList&&d.classList.contains("lvdd")){if(d.open)LVDDO.add(d.dataset.lvdd);else LVDDO.delete(d.dataset.lvdd)}},true);
-function renderLiveBoard(){const el=$("lvBoard");if(!el)return;const age=lvAge();const G=LVFEED&&LVFEED.g?Object.entries(LVFEED.g):[];
+function renderLiveBoard(){const el=$("lvBoard");if(!el)return;espnMerge();const age=lvAge();const G=LVFEED&&LVFEED.g?Object.entries(LVFEED.g):[];
   const rows=G.map(([id,F])=>{const g=allGames().find(x=>String(x.id)===id);return g?{g,F}:null}).filter(Boolean).filter(x=>!x.F.done);
-  const st=age==null?"Live updates start when games kick off.":`Auto-updating from ${esc(LVFEED.src||"The Odds API")} · updated ${age<1?"just now":Math.round(age)+" min ago"} · clock is estimated from kickoff time`+(age>8?` · <b>updates look paused</b>`:"");
+  const rt=espnFresh()&&Object.keys(ESPNL.g).length;const st=(rt?`Scores and clock live from ESPN (every 30 sec)`:"")+(age==null?(rt?" · live lines appear when books post them.":"Live updates start when games kick off."):`${rt?" · live lines":"Auto-updating"} from ${esc(LVFEED.src||"The Odds API")} · updated ${age<1?"just now":Math.round(age)+" min ago"}`+(rt?"":" · clock is estimated from kickoff time")+(age>8&&!rt?` · <b>updates look paused</b>`:""));
   if(!rows.length){el.innerHTML=`<p class="small muted">${st}</p><div class="status">No games in progress right now.</div>`;return}
   const rk=v=>v==="Jump in"?0:v==="Watch"?1:2;const vp=v=>v?`<span class="pill p-${v==="Jump in"?"bb":v==="Watch"?"lean":"pass"}">${v}</span>`:"";
   const L=rows.map(({g,F})=>{const r=lvCalc(g,lvFeedState(F,{qbA:false,qbH:false,wx:false}));return {g,F,r,best:Math.min(rk(r.sp&&r.sp.ver&&r.sp.ver.v),rk(r.tt&&r.tt.ver&&r.tt.ver.v))}}).sort((a,b)=>a.best-b.best||String(a.g.k).localeCompare(String(b.g.k)));
-  el.innerHTML=`<p class="small muted">${st}</p><div class="list">`+L.map(({g,F,r})=>{const sp=r.sp,tt=r.tt;return `<button class="row lvb${String(g.id)===LV.gid?" on":""}" data-lvpick="${esc(g.id)}"><span class="m"><span class="tcell">${badge(g.a)}<b>${esc(T(g.a).abbr)}</b> <span class="score">${F.as}</span> <span class="muted">@</span> ${badge(g.h)}<b>${esc(T(g.h).abbr)}</b> <span class="score">${F.hs}</span></span></span><span class="r small muted">${F.half?"Half":"Q"+F.q+" ~"+esc(F.clk)}</span><span class="meta">${sp?`${esc((sp.side==="h"?T(g.h):T(g.a)).abbr)} ${ln(Math.round(sp.lineSide*2)/2)} ${vp(sp.ver.v)}`:"No live spread"} · ${tt?`${tt.side==="o"?"O":"U"} ${tt.L} ${vp(tt.ver.v)}`:"No live total"}${F.book?` · ${esc(F.book==="draftkings"?"DK":"FD")}`:""}</span></button>${lvDD(g,F,r)}`}).join("")+`</div>`;el.querySelectorAll(".lvdd").forEach(d=>{const pg=parseFloat(getComputedStyle(d.parentElement).rowGap)||0;if(pg)d.style.marginTop=(-pg-1)+"px"})}
+  el.innerHTML=`<p class="small muted">${st}</p><div class="list">`+L.map(({g,F,r})=>{const sp=r.sp,tt=r.tt;return `<button class="row lvb${String(g.id)===LV.gid?" on":""}" data-lvpick="${esc(g.id)}"><span class="m"><span class="tcell">${badge(g.a)}<b>${esc(T(g.a).abbr)}</b> <span class="score">${F.as}</span> <span class="muted">@</span> ${badge(g.h)}<b>${esc(T(g.h).abbr)}</b> <span class="score">${F.hs}</span></span></span><span class="r small muted">${F.half?"Half":"Q"+F.q+(F.rt?" ":" ~")+esc(F.clk)}</span><span class="meta">${sp?`${esc((sp.side==="h"?T(g.h):T(g.a)).abbr)} ${ln(Math.round(sp.lineSide*2)/2)} ${vp(sp.ver.v)}`:"No live spread"} · ${tt?`${tt.side==="o"?"O":"U"} ${tt.L} ${vp(tt.ver.v)}`:"No live total"}${F.book?` · ${esc(F.book==="draftkings"?"DK":"FD")}`:""}</span></button>${lvDD(g,F,r)}`}).join("")+`</div>`;el.querySelectorAll(".lvdd").forEach(d=>{const pg=parseFloat(getComputedStyle(d.parentElement).rowGap)||0;if(pg)d.style.marginTop=(-pg-1)+"px"})}
+/* ===== Real-time scores from ESPN's public scoreboard (every 30 s while games are on) ===== */
+let ESPNL={u:0,g:{}},ESPNOK=null,ESPNSC={};
+function espnRev(){const E=S.espn&&S.espn.t;if(!E)return null;const R={};for(const n in E)R[String(E[n])]=n;return R}
+async function espnPoll(){if(ESPNOK===false)return;const R=espnRev();if(!R)return;let j;
+  try{const r=await fetch("https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=300&_="+Math.floor(Date.now()/15000),{cache:"no-store"});if(!r.ok)throw 0;j=await r.json();ESPNOK=true}catch(e){if(ESPNOK==null)ESPNOK=false;return}
+  const G=allGames(),out={};
+  for(const ev of j.events||[]){const c=ev.competitions&&ev.competitions[0];if(!c||!c.status)continue;const st=c.status.type||{};if(st.state==="pre")continue;
+    const H=(c.competitors||[]).find(x=>x.homeAway==="home"),A=(c.competitors||[]).find(x=>x.homeAway==="away");if(!H||!A)continue;
+    const hn=R[String(H.team.id)],an=R[String(A.team.id)];const kt=new Date(ev.date).getTime();
+    let g=G.find(x=>x.h===hn&&x.a===an)||G.find(x=>x.h===an&&x.a===hn);
+    if(!g&&(hn||an))g=G.find(x=>{const k=new Date(x.k).getTime();return Math.abs(k-kt)<36e5*30&&(x.h===hn||x.a===hn||x.h===an||x.a===an)});
+    if(!g)continue;const sw=g.h!==hn&&g.a!==an;
+    const hs=+((sw?A:H).score)||0,as=+((sw?H:A).score)||0;
+    const done=!!st.completed||st.state==="post";const det=String(st.shortDetail||st.detail||"");
+    out[String(g.id)]={as,hs,q:c.status.period||1,clk:c.status.displayClock||"",half:/half/i.test(det)||st.name==="STATUS_HALFTIME",done,det,k:kt}}
+  ESPNL={u:Date.now(),g:out};espnRender()}
+function espnFresh(){return ESPNL.u&&Date.now()-ESPNL.u<5*60e3}
+function espnMerge(){if(!espnFresh())return;const E=ESPNL.g;if(!Object.keys(E).length)return;
+  if(!LVFEED)LVFEED={g:{}};if(!LVFEED.g)LVFEED.g={};
+  for(const id in E){const e=E[id];const F=LVFEED.g[id]||(LVFEED.g[id]={});Object.assign(F,{as:e.as,hs:e.hs,q:e.q,clk:e.clk,half:e.half,done:e.done,rt:1})}}
+function espnTicker(){const el=$("lvTicker");if(!el)return;const E=ESPNL.g;const L=Object.entries(E).map(([id,e])=>({id,e,g:allGames().find(x=>String(x.id)===id)})).filter(x=>x.g&&(!x.e.done||Date.now()-x.e.k<9*36e5));
+  if(!espnFresh()||!L.length){el.hidden=true;el.innerHTML="";return}
+  L.sort((a,b)=>(a.e.done?1:0)-(b.e.done?1:0)||a.e.k-b.e.k);const nIn=L.filter(x=>!x.e.done).length;
+  el.innerHTML=(nIn?`<span class="tklbl">LIVE</span>`:"")+L.map(({id,e,g})=>{const sk=e.as+"-"+e.hs;const fl=ESPNSC[id]&&ESPNSC[id]!==sk;ESPNSC[id]=sk;
+    const d=e.done?"Final":e.half?"Half":e.det||("Q"+e.q+" "+e.clk);
+    return `<a href="#live" class="${e.done?"fin":"in"}${fl?" flash":""}" data-tkid="${esc(id)}" title="${esc(g.a)} at ${esc(g.h)}">${badge(g.a)}<b>${esc(T(g.a).abbr)}</b> ${e.as} <span class="muted">·</span> ${badge(g.h)}<b>${esc(T(g.h).abbr)}</b> ${e.hs} <span class="tkd">${esc(d)}</span></a>`}).join("");
+  el.hidden=false}
+function espnRender(){espnMerge();espnTicker();try{if($("v-live")&&$("v-live").classList.contains("on")){renderLiveBoard();lvApplyFeed()}if(location.hash==="#depth"&&typeof renderDepth==="function")renderDepth()}catch(e){}}
+function espnLoop(){const anyLive=Object.values(ESPNL.g).some(e=>!e.done);const soon=allGames().some(g=>{const k=new Date(g.k).getTime();return !g.done&&k-Date.now()<15*60e3&&Date.now()-k<6*36e5});
+  espnPoll().finally(()=>setTimeout(espnLoop,(anyLive||soon)?30e3:5*60e3))}
+document.addEventListener("click",e=>{const a=e.target.closest("[data-tkid]");if(a){LV.gid=a.dataset.tkid;setTimeout(()=>{try{renderLive()}catch(x){}},50)}});
 function lvFeedInit(){const v=$("v-live");if(!v)return;
   v.addEventListener("click",e=>{const b=e.target.closest("[data-lvpick]");if(b){LV.gid=b.dataset.lvpick;renderLive();$("lvCalc").scrollIntoView({behavior:"smooth",block:"start"});return}
     const a=e.target.closest("[data-lvauto]");if(a){const s=lvState(LV.gid);s.auto=true;$("lvCalc").dataset.gid="";renderLive()}});
@@ -2905,6 +2948,7 @@ function lvFeedInit(){const v=$("v-live");if(!v)return;
 function lvAutoTag(){const el=$("lvAuto");if(!el||!LV.gid)return;const F=LVFEED&&LVFEED.g&&LVFEED.g[LV.gid];const s=lvState(LV.gid);
   el.innerHTML=!F||F.done?"":s.auto===false?`Manual numbers · <button type="button" class="pkx" data-lvauto="1">Back to live feed</button>`:`<span style="color:var(--good)">●</span> Live feed: score, line and total fill in automatically${F.book?` (${F.book==="draftkings"?"DraftKings":"FanDuel"})`:""}. Clock is estimated; fix it if it's off.`}
 lvFeedInit();
+(function espnStart(){if(S&&S.espn&&S.espn.t&&typeof allGames==="function"&&allGames().length){espnLoop()}else setTimeout(espnStart,1500)})();
 
 
 
