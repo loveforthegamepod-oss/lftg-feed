@@ -436,6 +436,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 .lvupd{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:999;background:#ffd34d;color:#1a1030;border:0;border-radius:999px;padding:10px 18px;font-weight:800;box-shadow:0 6px 24px rgba(0,0,0,.4);cursor:pointer}
 .lvtick .tklbl{flex:0 0 auto;align-self:center;font-size:11px;font-weight:800;letter-spacing:.08em;color:#ff6b6b}
 @media (prefers-reduced-motion:reduce){.lvtick a.flash{animation:none}}
+.lvtw{background:#03170d!important}main a:not(.btn):not(.wl a){color:#7fe0ad}
 </style>
 </head>
 <body class="viewer">
@@ -907,7 +908,7 @@ function renderBets(){const G=games().filter(isLive);const m=S.meta||{};
   const bb=G.filter(g=>g.tier==="Best Bet"),lean=G.filter(g=>g.tier==="Lean"),tb=G.filter(g=>g.tot&&g.tot.tier==="Best Bet");
   const nlm=bb.filter(g=>g.lm).length+tb.filter(g=>g.tot.lm).length;const rec=(S.tracker&&S.tracker.summary)||{};
   $("tiles").innerHTML=`<div class="tile"><div class="k">Keepers</div><div class="v">${bb.length+tb.length}</div><div class="s">${bb.length} spreads · ${tb.length} totals${nlm?" · "+nlm+" after line move":""}</div></div>
-   <div class="tile"><div class="k">Leans</div><div class="v">${lean.length}</div><div class="s">Edge 4–5, not bets</div></div>
+   <div class="tile"><div class="k">Option reads</div><div class="v">${lean.length}</div><div class="s">Edge 4–5, not bets</div></div>
    <div class="tile"><div class="k">Live record</div><div class="v">${esc(rec.record??"0-0")}</div><div class="s">${esc(rec.note??"Graded after each game")}</div></div>
    <div class="tile"><div class="k">Backtest, all rules</div><div class="v">${esc(m.combined??"55.6%")}</div><div class="s">${esc(m.combinedNote??"")}</div></div>`;
   const ord=(x,y)=>(x.lm?1:0)-(y.lm?1:0);
@@ -3051,7 +3052,7 @@ function toRows(){const G=games().filter(g=>!g.done&&g.tot&&(g.tot.cur!=null||g.
 function renderTotals(){const el=$("toList");if(!el)return;const m=S.meta||{};const R=toRows();
   $("toSub").textContent=`Week ${m.week??"?"} · ${R.length} games with a total · lines as of ${m.linesAsOf??"?"}. Every game's market total next to the Reed index total.`;
   const bb=R.filter(x=>x.t.tier==="Best Bet"),ln=R.filter(x=>x.t.tier==="Lean");const TB=((S.tracker&&S.tracker.bets)||[]).filter(b=>/^(over|under)\b/i.test(b.bet||""));const w=TB.filter(b=>b.result==="W").length,l=TB.filter(b=>b.result==="L").length;const cs=clvSum(TB);
-  $("toTiles").innerHTML=`<div class="tile"><div class="k">Keepers</div><div class="v">${bb.length}</div><div class="s">${bb.map(x=>esc(x.t.side+" "+hfs(x.t.line))).join(" · ")||"none right now"}</div></div><div class="tile"><div class="k">Leans</div><div class="v">${ln.length}</div></div><div class="tile"><div class="k">Totals record</div><div class="v">${w}-${l}</div><div class="s">${TB.filter(b=>!b.result).length} pending</div></div><div class="tile"><div class="k">Beat the close</div><div class="v">${cs.n?cs.beat+"/"+cs.n:"—"}</div><div class="s">${cs.n?"avg "+clvS(cs.avg,2)+" pts":""}</div></div>`;
+  $("toTiles").innerHTML=`<div class="tile"><div class="k">Keepers</div><div class="v">${bb.length}</div><div class="s">${bb.map(x=>esc(x.t.side+" "+hfs(x.t.line))).join(" · ")||"none right now"}</div></div><div class="tile"><div class="k">Option reads</div><div class="v">${ln.length}</div></div><div class="tile"><div class="k">Totals record</div><div class="v">${w}-${l}</div><div class="s">${TB.filter(b=>!b.result).length} pending</div></div><div class="tile"><div class="k">Beat the close</div><div class="v">${cs.n?cs.beat+"/"+cs.n:"—"}</div><div class="s">${cs.n?"avg "+clvS(cs.avg,2)+" pts":""}</div></div>`;
   const q=($("toQ").value||"").toLowerCase();let L=R.filter(x=>!q||x.g.a.toLowerCase().includes(q)||x.g.h.toLowerCase().includes(q));
   if(toF==="bets")L=L.filter(x=>x.t.tier==="Best Bet"||x.t.tier==="Lean");else if(toF==="over")L=L.filter(x=>x.gap!=null&&x.gap>0);else if(toF==="under")L=L.filter(x=>x.gap!=null&&x.gap<0);else if(toF==="wx")L=L.filter(x=>x.wx);else if(toF==="move")L=L.filter(x=>x.mv!=null&&Math.abs(x.mv)>=3);
   const so=$("toSort").value;L.sort(so==="kick"?((a,b)=>String(a.g.k).localeCompare(String(b.g.k))):so==="move"?((a,b)=>Math.abs(b.mv||0)-Math.abs(a.mv||0)):((a,b)=>Math.abs(b.gap||0)-Math.abs(a.gap||0)));
