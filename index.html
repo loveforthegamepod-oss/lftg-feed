@@ -508,6 +508,10 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
     <p class="muted small">Built from this week's index picks. Every leg uses the hit rate its pick type earned in the 2021–26 backtest (★★★ 57%, ★★ 54%, ★ 48–50%). A parlay is only +EV if its legs are: good legs multiply the edge, weak legs multiply the loss. Each card shows the hit chance, the <b>fair odds</b> (what it's really worth) and the payout at standard −110 prices. <b>Only bet a parlay if your book pays at least the fair odds.</b></p>
     <div class="tiles" id="plTiles"></div>
     <div id="plCards"></div>
+    <h2 style="margin-top:22px">Same-game parlays</h2>
+    <p class="muted small">One per game, from that matchup's model legs: the side, game-total and team-total unders, and the player props the model rates Strong or Lean, priced together in 20,000 simulated games (player stats are linked to their team's and the opponent's scoring with weights fitted on 2025–26 game logs). Tap a game to see its parlays. Each one is logged before kickoff and graded when the game goes final. <b>Only bet one if your book's same-game price is longer than the fair odds.</b></p>
+    <div class="tiles" id="sgpRec"></div>
+    <div id="sgpList" class="list"></div>
     <h2 style="margin-top:22px">Build your own</h2>
     <p class="muted small">Tick any legs. Same-game combos (a side and a total from one game) are usually only offered as same-game parlays, which books price themselves: compare their price to the fair odds here.</p>
     <div id="plLegs"></div>
@@ -1410,7 +1414,9 @@ function plCard(st){const c=plCalc(st.legs);const ev=c.ev*100;const evc=ev>=5?"#
   <div style="margin-top:8px">${st.legs.map(l=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)"><span>${badge(l.team)} <b>${esc(l.label)}</b> <span class="muted small">${esc(l.mu)}</span></span><span class="small">${l.kind==="ml"?`<span class="lm">index ${Math.round(l.p*100)}% · Vegas ${Math.round(l.pv*100)}%</span>`:confPill(l.conf)}</span></div>`).join("")}</div>
   <div class="nums" style="margin-top:8px"><span><b>Hits</b>${(c.p*100).toFixed(c.p<.05?1:0)}%</span><span><b>Fair odds</b>${am(c.fair)}</span><span><b>EV at payout</b><span style="color:${evc}">${ev>=0?"+":""}${ev.toFixed(0)}%</span></span><span><b>Stake</b>${units}</span></div>
   ${c.sg?`<div class="note small">Includes legs from the same game: most books only allow this as a same-game parlay at their own price.</div>`:""}<div class="note small">Bet only at <b>${am(c.fair)}</b> or better. ${ev<0?"At standard prices this one is −EV: the legs aren't strong enough to carry it.":""}</div></article>`}
-function renderParlays(){const el=$("plCards");if(!el)return;const L=plLegs();const S_=plSets();
+let SGPRUN=0;function sgpSectionRun(){if(location.hash!=="#parlays")return;try{renderSgpSection()}catch(e){}if(!PP&&!PPL)loadProps().then(()=>{try{renderSgpSection()}catch(e){}});if(Date.now()-SGPRUN>60e3){SGPRUN=Date.now();sgpGrade().then(()=>{try{renderSgpSection()}catch(e){}})}}
+window.addEventListener("hashchange",()=>{if(location.hash==="#parlays")setTimeout(sgpSectionRun,50)});
+function renderParlays(){setTimeout(sgpSectionRun,0);const el=$("plCards");if(!el)return;const L=plLegs();const S_=plSets();
   const best=S_.map(st=>({st,c:plCalc(st.legs)})).filter(x=>!x.st.fun).sort((a,b)=>b.c.ev-a.c.ev)[0];
   $("plTiles").innerHTML=`<div class="tile"><div class="k">Legs on the board</div><div class="v">${L.length}</div><div class="s">${L.filter(l=>l.tier==="Best Bet").length} best bets · ${L.filter(l=>l.tier==="Lean").length} leans · ${L.filter(l=>l.kind==="ml").length} upset MLs</div></div><div class="tile"><div class="k">Best value</div><div class="v">${best?esc(best.st.name.replace("The ","")):"—"}</div><div class="s">${best?(best.c.ev>=0?"+":"")+(best.c.ev*100).toFixed(0)+"% EV at −110":""}</div></div><div class="tile"><div class="k">Break-even per leg</div><div class="v">52.4%</div><div class="s">At −110. Legs below that make any parlay worse.</div></div>`;
   el.innerHTML=S_.map(plCard).join("")||`<div class="status">Not enough qualifying legs yet. Parlays appear once at least two best bets are on the board.</div>`;
@@ -1448,24 +1454,25 @@ function muBreakdown(g){if(g.final)return "";const A=g.as||[],H=g.hs||[];const o
 function nInv(p){p=Math.min(1-1e-9,Math.max(1e-9,p));const a=[-39.6968302866538,220.946098424521,-275.928510446969,138.357751867269,-30.6647980661472,2.50662827745924],b=[-54.4760987982241,161.585836858041,-155.698979859887,66.8013118877197,-13.2806815528857],c=[-.00778489400243029,-.322396458041136,-2.40075827716184,-2.54973253934373,4.37466414146497,2.93816398269878],d=[.00778469570904146,.32246712907004,2.445134137143,3.75440866190742];const pl=.02425;let q,r;
   if(p<pl){q=Math.sqrt(-2*Math.log(p));return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}if(p>1-pl){q=Math.sqrt(-2*Math.log(1-p));return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
   q=p-.5;r=q*q;return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)}
-const SGPC={};const SGP_N=20000,SG_SM=15.5,SG_ST=14.5;const SGRHO={py:.55,ptd:.6,ry:.4,recy:.4,rc:.3,atd:.45};
+const SGPC={};const SGP_N=20000,SG_SM=15.5,SG_ST=14.5;/* own-team / opponent loadings, fitted 2025-26 on 35k player games (stat vs prior average, team points vs the closing-line implied team total): */
+const SGRHO={py:[.315,.129],ptd:[.458,.044],ry:[.222,-.082],recy:[.113,.073],rc:[.022,.071],atd:[.29,.023]};
 function sgpLegs(g){const L=[];const t=g.tot;const A=T(g.a).abbr,Hh=T(g.h).abbr;
   const cp=coverPick(g);if(cp&&!cp.tie&&cp.p>=.51)L.push({k:"side",label:`${T(cp.team).abbr} ${ln(cp.line)}`,team:cp.team,line:cp.line,dec:1.909,src:"Spread"});
   if(t&&t.cur!=null&&t.model!=null&&t.model<t.cur&&nPhi((t.cur-t.model)/2/SG_ST)>=.51)L.push({k:"tot",label:`Under ${t.cur}`,line:t.cur,dec:1.909,src:"Game total"});
   try{for(const r of ttRows(true).filter(r=>String(r.g.id)===String(g.id)&&r.side==="Under"&&r.e<=-1))L.push({k:"tt",label:`${T(r.team).abbr} team total Under ${r.line}`,team:r.team,line:r.line,dec:1.909,src:"Team total"})}catch(e){}
   if(PP&&PP.g){const gi=PP.g.findIndex(x=>String(x[0])===String(g.id));if(gi>=0)for(const x of ppPlayers().filter(x=>x.gi===gi)){if(x.inj&&/^Out|Doubtful/.test(x.inj))continue;for(const mk in x.m){const b=ppBook(x,mk);if(!b)continue;const e=ppEval(x,mk,b[0],b[1],b[2]);if(!e||!(e.tier==="Strong"||e.tier==="Lean")||e.p==null)continue;const odds=mk==="atd"?b[1]:(e.side==="Under"?b[2]:b[1]);if(!odds)continue;
-      L.push({k:"prop",pl:pnk(x.name),mk,label:mk==="atd"?`${x.name} anytime TD`:`${x.name} ${e.side.toLowerCase()} ${b[0]} ${PMK[mk][0].toLowerCase()}`,team:x.team,p0:e.p,side:mk==="atd"?"Over":e.side,dec:decOfAm(+odds),odds:+odds,book:b[3]||"",tier:e.tier,src:"Player prop"})}}}
+      L.push({k:"prop",pl:pnk(x.name),player:x.name,line:mk==="atd"?null:b[0],mk,label:mk==="atd"?`${x.name} anytime TD`:`${x.name} ${e.side.toLowerCase()} ${b[0]} ${PMK[mk][0].toLowerCase()}`,team:x.team,p0:e.p,side:mk==="atd"?"Over":e.side,dec:decOfAm(+odds),odds:+odds,book:b[3]||"",tier:e.tier,src:"Player prop"})}}}
   return L}
 function sgpCalc(g){if(!g||g.done||g.mkt==null||g.model==null||!isLive(g))return null;const key=g.id+"|"+(PP?PP.u:"")+"|"+g.mkt+"|"+(g.tot&&g.tot.cur);if(SGPC[key])return SGPC[key];
   let L=sgpLegs(g);const pr=L.filter(l=>l.k==="prop").sort((a,b)=>(b.tier==="Strong")-(a.tier==="Strong")||b.p0-a.p0).slice(0,6);L=L.filter(l=>l.k!=="prop").concat(pr);if(L.length<2)return SGPC[key]={legs:L,sets:[]};
   /* seeded simulation so numbers don't jump between views */let sd=0;for(const ch of String(g.id))sd=(sd*31+ch.charCodeAt(0))|0;const rnd=()=>{sd|=0;sd=sd+0x6D2B79F5|0;let t2=Math.imul(sd^sd>>>15,1|sd);t2=t2+Math.imul(t2^t2>>>7,61|t2)^t2;return((t2^t2>>>14)>>>0)/4294967296};
   const gs=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
-  const muM=(+g.model+ +g.mkt)/2,muT=g.tot&&g.tot.cur!=null?(g.tot.model!=null?(g.tot.model+g.tot.cur)/2:g.tot.cur):55;const sdTeam=Math.sqrt(SG_SM*SG_SM+SG_ST*SG_ST)/2;
+  const ZR=(SG_ST*SG_ST-SG_SM*SG_SM)/(SG_ST*SG_ST+SG_SM*SG_SM);const muM=(+g.model+ +g.mkt)/2,muT=g.tot&&g.tot.cur!=null?(g.tot.model!=null?(g.tot.model+g.tot.cur)/2:g.tot.cur):55;const sdTeam=Math.sqrt(SG_SM*SG_SM+SG_ST*SG_ST)/2;
   const N=SGP_N;const hit=L.map(()=>new Uint8Array(N));const th=L.map(l=>l.k==="prop"?(l.side==="Over"?nInv(1-l.p0):nInv(l.p0)):0);
   for(let n=0;n<N;n++){const M=muM+SG_SM*gs(),Tt=muT+SG_ST*gs();const ap=(Tt+M)/2,hp=(Tt-M)/2;const za=(ap-(muT+muM)/2)/sdTeam,zh=(hp-(muT-muM)/2)/sdTeam;
     for(let i=0;i<L.length;i++){const l=L[i];let w=false;
       if(l.k==="side"){const m=l.team===g.a?M:-M;w=m+l.line>0}else if(l.k==="tot")w=Tt<l.line;else if(l.k==="tt")w=(l.team===g.a?ap:hp)<l.line;
-      else{const rho=SGRHO[l.mk]||.35;const z=rho*(l.team===g.a?za:zh)+Math.sqrt(1-rho*rho)*gs();w=l.side==="Over"?z>th[i]:z<th[i]}
+      else{const bl=SGRHO[l.mk]||[.2,0];const zo=l.team===g.a?za:zh,zx=l.team===g.a?zh:za;const ex=bl[0]*bl[0]+bl[1]*bl[1]+2*bl[0]*bl[1]*ZR;const z=bl[0]*zo+bl[1]*zx+Math.sqrt(Math.max(.05,1-ex))*gs();w=l.side==="Over"?z>th[i]:z<th[i]}
       if(w)hit[i][n]=1}}
   for(let i=0;i<L.length;i++){let c=0;for(let n=0;n<N;n++)c+=hit[i][n];L[i].p=c/N}
   const combos=[];const idx=[...L.keys()];const rec=(st,cur)=>{if(cur.length>=2)combos.push(cur.slice());if(cur.length===4)return;for(let i=st;i<idx.length;i++){cur.push(i);rec(i+1,cur);cur.pop()}};rec(0,[]);
@@ -1476,11 +1483,37 @@ function sgpCalc(g){if(!g||g.done||g.mkt==null||g.model==null||!isLive(g))return
   const sets=[];const s2=pickBest(2,.3),s3=pickBest(3,.15),s4=pickBest(4,.07);if(s2)sets.push(Object.assign({name:"Safer 2-leg"},s2));if(s3)sets.push(Object.assign({name:"Model SGP"},s3));if(s4)sets.push(Object.assign({name:"Longshot 4-leg"},s4));
   return SGPC[key]={legs:L,sets}}
 function sgpOdds(p){return pAm(p)}
-function sgpHtml(g,compact){const R=sgpCalc(g);if(!R)return "";if(!R.sets.length)return compact?"":`<h3 style="margin-top:14px">Same-game parlay</h3><p class="small muted">${R.legs.length?"Only one model leg in this game, so no same-game parlay.":"No model legs in this game yet."}${!PP?" Player props add more legs once they load.":""}</p>`;
+function sgpHtml(g,compact,bare){const R=sgpCalc(g);if(!R)return "";if(!R.sets.length)return compact?"":`<h3 style="margin-top:14px">Same-game parlay</h3><p class="small muted">${R.legs.length?"Only one model leg in this game, so no same-game parlay.":"No model legs in this game yet."}${!PP?" Player props add more legs once they load.":""}</p>`;
   const one=s=>`<div class="sgp"><div class="sgph"><b>${esc(s.name)}</b><span class="sgpn"><b>${Math.round(s.p*1000)/10}%</b> to hit · fair ${esc(sgpOdds(s.p))}</span></div><ol>${s.legs.map(l=>`<li><span class="sgpk">${esc(l.src)}</span> ${esc(l.label)} <span class="muted">· ${Math.round(l.p*100)}%${l.k==="prop"?` · ${esc((l.odds>0?"+":"")+l.odds)} ${esc(l.book)}`:""}</span></li>`).join("")}</ol>
     <div class="small muted">${s.corr>1.04?`Legs move together: ${Math.round((s.corr-1)*100)}% likelier together than separately (${Math.round(s.pi*1000)/10}% if independent). `:s.corr<.96?`Legs pull against each other a bit (${Math.round(s.pi*1000)/10}% if independent). `:""}Bet it only if your book's same-game price is longer than ${esc(sgpOdds(s.p))}.</div></div>`;
   const sets=compact?[R.sets.find(x=>x.name==="Model SGP")||R.sets[0]]:R.sets;
+  if(bare)return `<div class="sgps">${R.sets.map(one).join("")}</div><div class="mxact"><button type="button" class="btn" data-mxopen="${esc(String(g.id))}">Full matchup →</button></div>`;
   return `${compact?`<div class="lvst" style="margin-top:10px">Same-game parlay</div>`:`<h3 style="margin-top:14px">Same-game parlays</h3><p class="small muted">Built from the model's legs in this game: the side and game total (LFTG line, σ 15.5 / 14.5), team-total unders, and player props the model rates Strong or Lean. Priced together in 20,000 simulated games, so legs that go together (an under with a QB under) are counted that way. Overs on totals aren't used: they never showed an edge in testing. For entertainment: same-game parlays are high-variance, and books price the correlation too.</p>`}<div class="sgps">${sets.map(one).join("")}</div>`}
+
+/* ===== SGP log + grading: hub/sgplog = {wk, g:{gid:{a,h,k,eid,sets:[{name,p,legs:[{k,label,team,line,mk,side,player,odds,p}]}]}}} written before kickoff by the logger task; graded here from final scores + ESPN box scores ===== */
+function sgpSnapshot(mins){const now=Date.now();const out={};for(const g of games()){if(!isLive(g))continue;const t=Date.parse(g.k);if(mins!=null&&!(t-now<=mins*60e3))continue;let R=null;try{R=sgpCalc(g)}catch(e){}if(!R||!R.sets.length)continue;
+    out[g.id]={a:g.a,h:g.h,k:g.k,eid:(typeof ESPNEID!=="undefined"&&ESPNEID[String(g.id)])||(ESPNL.g[String(g.id)]||{}).eid||null,at:new Date().toISOString(),sets:R.sets.map(s=>({name:s.name,p:+s.p.toFixed(4),pi:+s.pi.toFixed(4),legs:s.legs.map(l=>({k:l.k,label:l.label,team:l.team||null,line:l.line??null,mk:l.mk||null,side:l.side||null,player:l.player||null,odds:l.odds||null,p:+l.p.toFixed(3)}))}))}}
+  return {wk:(S.meta||{}).week,g:out}}
+const SGPG=(()=>{try{return JSON.parse(localStorage.getItem("lftg_sgpg")||"{}")}catch(e){return{}}})();
+async function sgpBox(eid){try{const r=await fetch("https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event="+eid,{cache:"no-store"});if(!r.ok)return null;const j=await r.json();const bx=j.boxscore||{};const P={};const R=espnRev()||{};
+  for(const t of bx.players||[]){const team=R[String(t.team.id)]||t.team.displayName;for(const c of t.statistics||[]){const L=c.labels||[];const ix=k=>L.indexOf(k);for(const a of c.athletes||[]){const nm=(a.athlete&&a.athlete.displayName)||"";const key=team+"|"+d2ln(nm);const v=a.stats||[];const o=P[key]||(P[key]={n:nm,py:0,ptd:0,ry:0,recy:0,rc:0,td:0});
+    if(c.name==="passing"){o.py=+v[ix("YDS")]||0;o.ptd=+v[ix("TD")]||0}else if(c.name==="rushing"){o.ry=+v[ix("YDS")]||0;o.td+=+v[ix("TD")]||0}else if(c.name==="receiving"){o.recy=+v[ix("YDS")]||0;o.rc=+v[ix("REC")]||0;o.td+=+v[ix("TD")]||0}}}}return P}catch(e){return null}}
+function sgpLegRes(l,G,box){const f=G.final;if(!f)return null;const ap=+f.ap,hp=+f.hp;const pts=t=>t===G.a?ap:t===G.h?hp:null;
+  if(l.k==="side"){const m=l.team===G.a?ap-hp:hp-ap;const x=m+l.line;return x>0?"W":x<0?"L":"P"}
+  if(l.k==="tot"){const x=l.line-(ap+hp);return x>0?"W":x<0?"L":"P"}
+  if(l.k==="tt"){const x=l.line-pts(l.team);return x>0?"W":x<0?"L":"P"}
+  if(l.k==="prop"){if(!box)return null;const o=box[l.team+"|"+d2ln(l.player)];if(!o)return "V";if(l.mk==="atd")return o.td>0?"W":"L";const v=o[l.mk];if(v==null)return null;const x=(l.side==="Over"?v-l.line:l.line-v);return x>0?"W":x<0?"L":"P"}return null}
+async function sgpGrade(){const LG=S.sgplog;if(!LG||!LG.g)return SGPG;let ch=0;
+  for(const [gid,E] of Object.entries(LG.g)){const key=(LG.wk||"")+"|"+gid;if(SGPG[key]&&SGPG[key].done)continue;const G=allGames().find(x=>String(x.id)===gid);if(!G||!G.done||!G.final)continue;
+    const needBox=E.sets.some(s=>s.legs.some(l=>l.k==="prop"));const box=needBox&&E.eid?await sgpBox(E.eid):null;if(needBox&&!box)continue;
+    SGPG[key]={done:1,sets:E.sets.map(s=>{const r=s.legs.map(l=>sgpLegRes(l,G,box));const live=r.filter(x=>x!=="V"&&x!=="P");return {name:s.name,legs:r,res:r.some(x=>x==="L")?"L":live.length===0?"P":live.every(x=>x==="W")?"W":null}})};ch=1}
+  if(ch)try{localStorage.setItem("lftg_sgpg",JSON.stringify(SGPG))}catch(e){}return SGPG}
+function sgpRecord(){const LG=S.sgplog;const out={};if(!LG||!LG.g)return out;for(const gid in LG.g){const G=SGPG[(LG.wk||"")+"|"+gid];if(!G)continue;for(const s of G.sets){const o=out[s.name]||(out[s.name]={w:0,l:0,p:0});if(s.res==="W")o.w++;else if(s.res==="L")o.l++;else if(s.res==="P")o.p++}}return out}
+function renderSgpSection(){const el=$("sgpList");if(!el)return;const G=games().filter(isLive).sort((a,b)=>String(a.k).localeCompare(String(b.k)));const rows=[];
+  for(const g of G){let R=null;try{R=sgpCalc(g)}catch(e){}if(!R||!R.sets.length)continue;const best=R.sets.find(x=>x.name==="Model SGP")||R.sets[0];
+    rows.push(`<details class="mxdd mxrow sgpdd" data-sgp="${esc(String(g.id))}"><summary><span>${badge(g.a)} ${badge(g.h)} <b>${esc(g.a)} @ ${esc(g.h)}</b> <span class="muted small">· ${esc(kick(g.k))} · ${R.sets.length} parlay${R.sets.length>1?"s":""} · best ${Math.round(best.p*1000)/10}% (fair ${esc(pAm(best.p))})</span></span></summary><div class="mxb">${sgpHtml(g,false,true)}</div></details>`)}
+  el.innerHTML=rows.join("")||`<div class="status">${PP?"No games with two or more model legs right now.":"Loading player props…"}</div>`;
+  const rec=sgpRecord();const rt=$("sgpRec");if(rt){const ks=Object.keys(rec);const LG=S.sgplog;rt.innerHTML=ks.length?ks.map(k=>`<div class="tile"><div class="k">${esc(k)}</div><div class="v">${rec[k].w}-${rec[k].l}${rec[k].p?"-"+rec[k].p:""}</div><div class="s">logged before kickoff · Week ${esc(String(LG.wk||""))}</div></div>`).join(""):`<div class="tile"><div class="k">Same-game parlay record</div><div class="v">0-0</div><div class="s">${LG&&LG.g&&Object.keys(LG.g).length?Object.keys(LG.g).length+" games logged · graded as games go final":"Parlays are logged before each kickoff"}</div></div>`}}
 function muPlayers(g){if(g.final)return "";if(!PP&&!PPL)return `<p class="small muted" style="margin-top:12px">Loading key players…</p>`;
   if(!D2||D2.loading){d2Load();clearTimeout(muPlayers._t);muPlayers._t=setTimeout(function w(){if(D2&&D2.loading){muPlayers._t=setTimeout(w,400);return}const el=$("muPP");if(el&&!$("muDetail").hidden&&el.dataset.gid===String(g.id))el.innerHTML=muPlayers(g)},400)}
   const gi=PP&&PP.g?PP.g.findIndex(x=>String(x[0])===String(g.id)):-1;
@@ -3544,7 +3577,7 @@ renderGfxTypes();renderGfxOpts();
   const dat=s=>s&&(typeof s.data==="function"?s.data():s.data);
   try{DB.doc("live/box").onSnapshot(snap=>{LIVEBOX=dat(snap)||null;try{if(location.hash==="#depth")renderDepth();if(location.hash==="#live")renderLiveBoard()}catch(e){}},()=>{})}catch(e){}
   try{for(let i=0;i<4;i++)DB.doc("mood/c"+i).onSnapshot(snap=>{MOODC[i]=dat(snap)||null;moodMerge();try{renderTeams()}catch(e){}},()=>{})}catch(e){}
-  for(const k of ["meta","board","ratings","tracker","backtest","teams","proj","trend","injuries","injuries_manual","potw","espn","heisman","projhist"]){
+  for(const k of ["meta","board","ratings","tracker","backtest","teams","proj","trend","injuries","injuries_manual","potw","espn","heisman","projhist","sgplog"]){
     try{DB.doc("hub/"+k).onSnapshot(snap=>{const d=dat(snap);if(k==="teams")S.teams=d&&d.t||null;else if(k==="trend"){S.trendDB=d||null;pickTrend()}else S[k]=d||null;if(k==="heisman"&&location.hash==="#heisman")try{renderHeis()}catch(e){}clearTimeout(timer);renderAll()},err=>{})}catch(e){}}
   dfetch("data/trend.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{TRF=d;pickTrend();renderGfxOpts(true)}).catch(()=>{});
   try{DB.doc("gfx/logos").onSnapshot(s=>{const d=dat(s);S.logos=(d&&d.map)||{};renderAll();try{brandMark()}catch(e){}queueBuild(500)},()=>{})}catch(e){}
