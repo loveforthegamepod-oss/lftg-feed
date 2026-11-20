@@ -1450,11 +1450,11 @@ function nInv(p){p=Math.min(1-1e-9,Math.max(1e-9,p));const a=[-39.6968302866538,
   q=p-.5;r=q*q;return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)}
 const SGPC={};const SGP_N=20000,SG_SM=15.5,SG_ST=14.5;const SGRHO={py:.55,ptd:.6,ry:.4,recy:.4,rc:.3,atd:.45};
 function sgpLegs(g){const L=[];const t=g.tot;const A=T(g.a).abbr,Hh=T(g.h).abbr;
-  const cp=coverPick(g);if(cp&&!cp.tie&&cp.p>=.515)L.push({k:"side",label:`${T(cp.team).abbr} ${ln(cp.line)}`,team:cp.team,line:cp.line,dec:1.909,src:"Spread"});
-  if(t&&t.cur!=null&&t.model!=null&&t.model<t.cur&&nPhi((t.cur-t.model)/2/SG_ST)>=.515)L.push({k:"tot",label:`Under ${t.cur}`,line:t.cur,dec:1.909,src:"Game total"});
-  try{for(const r of ttRows(true).filter(r=>String(r.g.id)===String(g.id)&&r.side==="Under"&&r.e<=-1.5))L.push({k:"tt",label:`${T(r.team).abbr} team total Under ${r.line}`,team:r.team,line:r.line,dec:1.909,src:"Team total"})}catch(e){}
+  const cp=coverPick(g);if(cp&&!cp.tie&&cp.p>=.51)L.push({k:"side",label:`${T(cp.team).abbr} ${ln(cp.line)}`,team:cp.team,line:cp.line,dec:1.909,src:"Spread"});
+  if(t&&t.cur!=null&&t.model!=null&&t.model<t.cur&&nPhi((t.cur-t.model)/2/SG_ST)>=.51)L.push({k:"tot",label:`Under ${t.cur}`,line:t.cur,dec:1.909,src:"Game total"});
+  try{for(const r of ttRows(true).filter(r=>String(r.g.id)===String(g.id)&&r.side==="Under"&&r.e<=-1))L.push({k:"tt",label:`${T(r.team).abbr} team total Under ${r.line}`,team:r.team,line:r.line,dec:1.909,src:"Team total"})}catch(e){}
   if(PP&&PP.g){const gi=PP.g.findIndex(x=>String(x[0])===String(g.id));if(gi>=0)for(const x of ppPlayers().filter(x=>x.gi===gi)){if(x.inj&&/^Out|Doubtful/.test(x.inj))continue;for(const mk in x.m){const b=ppBook(x,mk);if(!b)continue;const e=ppEval(x,mk,b[0],b[1],b[2]);if(!e||!(e.tier==="Strong"||e.tier==="Lean")||e.p==null)continue;const odds=mk==="atd"?b[1]:(e.side==="Under"?b[2]:b[1]);if(!odds)continue;
-      L.push({k:"prop",mk,label:mk==="atd"?`${x.name} anytime TD`:`${x.name} ${e.side.toLowerCase()} ${b[0]} ${PMK[mk][0].toLowerCase()}`,team:x.team,p0:e.p,side:mk==="atd"?"Over":e.side,dec:decOfAm(+odds),odds:+odds,book:b[3]||"",tier:e.tier,src:"Player prop"})}}}
+      L.push({k:"prop",pl:pnk(x.name),mk,label:mk==="atd"?`${x.name} anytime TD`:`${x.name} ${e.side.toLowerCase()} ${b[0]} ${PMK[mk][0].toLowerCase()}`,team:x.team,p0:e.p,side:mk==="atd"?"Over":e.side,dec:decOfAm(+odds),odds:+odds,book:b[3]||"",tier:e.tier,src:"Player prop"})}}}
   return L}
 function sgpCalc(g){if(!g||g.done||g.mkt==null||g.model==null||!isLive(g))return null;const key=g.id+"|"+(PP?PP.u:"")+"|"+g.mkt+"|"+(g.tot&&g.tot.cur);if(SGPC[key])return SGPC[key];
   let L=sgpLegs(g);const pr=L.filter(l=>l.k==="prop").sort((a,b)=>(b.tier==="Strong")-(a.tier==="Strong")||b.p0-a.p0).slice(0,6);L=L.filter(l=>l.k!=="prop").concat(pr);if(L.length<2)return SGPC[key]={legs:L,sets:[]};
@@ -1469,7 +1469,7 @@ function sgpCalc(g){if(!g||g.done||g.mkt==null||g.model==null||!isLive(g))return
       if(w)hit[i][n]=1}}
   for(let i=0;i<L.length;i++){let c=0;for(let n=0;n<N;n++)c+=hit[i][n];L[i].p=c/N}
   const combos=[];const idx=[...L.keys()];const rec=(st,cur)=>{if(cur.length>=2)combos.push(cur.slice());if(cur.length===4)return;for(let i=st;i<idx.length;i++){cur.push(i);rec(i+1,cur);cur.pop()}};rec(0,[]);
-  const ok=c=>{const ks=c.map(i=>L[i]);if(ks.filter(l=>l.k==="tot").length&&ks.filter(l=>l.k==="tt").length>1)return false;return true};
+  const ok=c=>{const ks=c.map(i=>L[i]);if(ks.filter(l=>l.k==="tot").length&&ks.filter(l=>l.k==="tt").length>1)return false;const pls=ks.filter(l=>l.pl).map(l=>l.pl);if(new Set(pls).size<pls.length)return false;return true};
   const ev=c=>{let h=0;for(let n=0;n<N;n++){let a=1;for(const i of c)if(!hit[i][n]){a=0;break}h+=a}const p=h/N,pi=c.reduce((s,i)=>s*L[i].p,1),d=c.reduce((s,i)=>s*L[i].dec,1);return {legs:c.map(i=>L[i]),p,pi,d,corr:pi?p/pi:1,score:p*d}};
   const R=combos.filter(ok).map(ev).filter(r=>r.p>0);
   const pickBest=(n,minP)=>R.filter(r=>r.legs.length===n&&r.p>=minP).sort((a,b)=>b.score-a.score)[0];
