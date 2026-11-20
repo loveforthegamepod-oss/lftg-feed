@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<rect width="512" height="512" rx="96" fill="#0b5c35"/>
+<rect x="18" y="18" width="476" height="476" rx="82" fill="none" stroke="#f5b800" stroke-width="10"/>
+<g stroke="#ffffff" stroke-opacity=".18" stroke-width="6"><line x1="60" y1="150" x2="452" y2="150"/><line x1="60" y1="362" x2="452" y2="362"/></g>
+<text x="256" y="128" text-anchor="middle" font-family="Arial Black,Arial,Helvetica,sans-serif" font-weight="900" font-size="54" fill="#f5b800" letter-spacing="10">THE</text>
+<text x="256" y="300" text-anchor="middle" font-family="Arial Black,Impact,Arial,Helvetica,sans-serif" font-weight="900" font-size="140" fill="#ffffff" textLength="400" lengthAdjust="spacingAndGlyphs">REED</text>
+<text x="256" y="420" text-anchor="middle" font-family="Arial Black,Arial,Helvetica,sans-serif" font-weight="900" font-size="66" fill="#ffffff" textLength="340" lengthAdjust="spacingAndGlyphs">OPTION</text>
+<path d="M150 455 Q256 395 362 455" fill="none" stroke="#f5b800" stroke-width="10" stroke-linecap="round"/>
+<path d="M352 440 L366 457 L345 465" fill="none" stroke="#f5b800" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
