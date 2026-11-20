@@ -390,6 +390,8 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 .hsRow .m{display:flex;flex-direction:column;gap:2px;min-width:0}.hsRk{font:400 26px Anton,var(--display);width:36px;text-align:center}.hsBar{display:block;height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:3px}.hsBar i{display:block;height:100%;background:var(--accent,#f5b800);border-radius:99px}.hsUp{color:#2fd18a;font-weight:700}.hsDn{color:#e0283c;font-weight:700}.hsNew{font-size:11px;font-weight:800;color:#ffd34d}
 .lvtw{position:relative;display:flex;align-items:stretch;background:color-mix(in srgb,var(--bg,#120a2a) 88%,#000);border-bottom:1px solid rgba(255,255,255,.08)}
 .lvtw[hidden]{display:none}
+.lvtw{position:sticky;top:var(--tktop,0px);z-index:4}
+.qbx{margin:2px 0 10px;padding:10px 12px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.03)}.qbx .qbhd{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;justify-content:space-between;margin-bottom:6px}.qbx .qbhd b{font-size:13px;letter-spacing:.06em;text-transform:uppercase}.qbx .bxtab{font-size:12.5px}.qbx .qbld{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.qbx .qbld>div{font-size:12.5px;line-height:1.45}.qbx .qbres{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.qbx .qbres span{font-size:12px;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.07)}.qbx .qbres .ok{background:rgba(34,197,94,.18);color:#86efac}.qbx .qbres .bad{background:rgba(239,68,68,.18);color:#fca5a5}@media (max-width:520px){.qbx .qbld{grid-template-columns:1fr}}
 .lvtw .lvtick{flex:1;min-width:0;border-bottom:0;background:transparent;cursor:grab;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
 .lvtw.atl .lvtick{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 24px),transparent 100%)}
 .lvtw.atr .lvtick{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 100%);mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 100%)}
@@ -1275,12 +1277,14 @@ function mxBody(g){const R=(S.ratings&&S.ratings.rows)||[];const side=t=>{const 
   let mt="";try{const x=mtAll().find(y=>y.id===g.id);if(x)mt=`<span class="mxchip" style="background:${MT[x.t].c};color:#1b1b1f">${MT[x.t].e} ${esc(MT[x.t].k)}</span>`}catch(e){}
   let sp="";try{if(LIVEL&&LIVEL.h&&LIVEL.h[g.id])sp=`<div class="mxsp">${llSpark(LIVEL.h[g.id],g.model)}<span class="mxk">Spread movement vs the LFTG line</span></div>`}catch(e){}
   const tot=g.tot?`<span><b>Total</b>LFTG ${hfv(g.tot.model)} · market ${g.tot.cur!=null?hfs(g.tot.cur):"—"}${g.tot.tier&&g.tot.tier!=="Pass"?` · ${pill(g.tot.tier)} ${esc(g.tot.side||"")} ${g.tot.line??""}`:""}</span>`:"";
-  return `${f?`<div class="mxfinal">FINAL: ${esc(g.a)} ${f.ap} · ${esc(g.h)} ${f.hp}</div>`:""}${wp}
+  const qb=qbxSlot(g);
+  return `${f&&!qb?`<div class="mxfinal">FINAL: ${esc(g.a)} ${f.ap} · ${esc(g.h)} ${f.hp}</div>`:""}${qb}${f?"":wp}
    <div class="mxnums"><span><b>LFTG line</b>${esc(favTxt(g,g.model))}</span><span><b>Market</b>${esc(favTxt(g,g.mkt))}${g.open!=null&&g.open!==g.mkt?` <small class="muted">(opened ${esc(favTxt(g,g.open))})</small>`:""}</span>${g.tier&&g.tier!=="Pass"&&!f?`<span><b>Play</b>${pill(g.tier)} ${esc(g.pick||"")} ${g.line!=null?ln(g.line):""} · edge ${(+g.edge).toFixed(1)}</span>`:""}${tot}</div>
    <div class="mxchips">${mt}${g.wx&&g.wx.flag?`<span class="mxchip">🌬️ ${Math.round(g.wx.wind)} mph wind</span>`:""}${g.n?'<span class="mxchip">Neutral site</span>':""}<span class="mxchip">${esc(kick(g.k))}</span></div>
    ${sp}<div class="mxsides">${side(g.a)}${side(g.h)}</div>
    <div class="mxact"><button type="button" class="btn primary" data-mxopen="${esc(g.id||g.a+"|"+g.h)}">Full matchup →</button><a class="btn" href="#notes">Show notes</a><a class="btn" href="#lines">Line movement</a></div>`}
-function mxDD(id,cls){const open=MXO.has(id);const g=open?findGame(id):null;return `<details class="mxdd ${cls||""}" data-mx="${esc(id)}"${open?" open":""}><summary><span>Matchup details</span></summary><div class="mxb">${g?mxBody(g):""}</div></details>`}
+function mxDD(id,cls){const open=MXO.has(id);const g=open?findGame(id):null;return `<details class="mxdd ${cls||""}" data-mx="${esc(id)}"${open?" open":""}><summary><span>${mxLab(id)}</span></summary><div class="mxb">${g?mxBody(g):""}</div></details>`}
+function mxLab(id){try{const g=findGame(id);if(!g)return "Matchup details";const e=espnFresh()&&ESPNL.g[String(g.id)];if(g.done)return "Final · quick box score & recap";if(e&&!e.done)return "Live · quick box score & details"}catch(x){}return "Matchup details"}
 function mxEnhance(){document.querySelectorAll(".view.on").forEach(root=>{if(root.id==="v-matchups"&&$("muDetail")&&$("muDetail").offsetParent)return;
   root.querySelectorAll("div.card[data-gid],#lvCalc[data-gid]").forEach(c=>{if(c.querySelector(":scope>.mxdd"))return;if(!findGame(c.dataset.gid))return;c.insertAdjacentHTML("beforeend",mxDD(c.dataset.gid))});
   root.querySelectorAll(".it[data-gid]").forEach(r=>{const n=r.nextElementSibling;if(n&&n.classList.contains("mxdd"))return;if(!findGame(r.dataset.gid))return;r.insertAdjacentHTML("afterend",mxDD(r.dataset.gid,"mxrow mxit"))});
@@ -3149,6 +3153,8 @@ function tkArrows(){const el=$("lvTicker"),w=$("lvTickWrap");if(!el||!w)return;c
   el.addEventListener("click",e=>{if(Date.now()-TKDRAG<250){e.preventDefault();e.stopPropagation()}},true);
   el.addEventListener("click",e=>{const d=e.target.closest(".tkday");if(d)el.scrollTo({left:Math.max(0,d.offsetLeft-el.offsetLeft-8),behavior:"smooth"})});
 })();
+function tkTop(){try{const w=$("lvTickWrap"),h=document.querySelector("header"),n=document.querySelector("nav.tabs");if(!w||!h)return;let t=h.offsetHeight;if(n&&getComputedStyle(n).position==="sticky")t=(parseFloat(getComputedStyle(n).top)||0)+n.offsetHeight;document.documentElement.style.setProperty("--tktop",Math.round(t)+"px")}catch(e){}}
+window.addEventListener("resize",tkTop);setTimeout(tkTop,300);setTimeout(tkTop,2000);
 function espnTicker(){const el=$("lvTicker");if(!el)return;let G;try{G=games().slice()}catch(e){G=[]}if(!G.length){$("lvTickWrap").hidden=true;return}
   G.sort((a,b)=>String(a.k).localeCompare(String(b.k)));const fr=espnFresh();let lastD=null,nIn=0,firstLive=null,firstPre=null;
   const day=k=>{const t=Date.parse(k);return isNaN(t)?"TBA":new Date(t).toLocaleDateString("en-US",{timeZone:"America/New_York",weekday:"short"}).toUpperCase()};
@@ -3280,6 +3286,50 @@ function bxBody(g,j){const id=String(g.id);const S2=bxSide(g,j);const c=S2.c;con
   const players=BXCAT.filter(([k])=>(PL[g.a]||[]).concat(PL[g.h]||[]).some(x=>x.name===k&&(x.athletes||[]).length)).map(([k,lab])=>`<div class="bxsec"><div class="lvst">${lab}</div><div class="bxgrid">${cat(g.a,k)}${cat(g.h,k)}</div></div>`).join("");
   const upd=`<div class="mxk" style="margin-top:6px">Box score from ESPN${live?" · refreshes every 30 sec":""}.</div>`;
   return `<div class="bxsec">${line}</div>`+wpBlock(g,j)+model+btns+team+players+upd}
+/* ---------- Quick box score inside each game's drop-down (finished + live games) ---------- */
+const QBX={},QBXF={};
+function qbxEid(g){const id=String(g.id);return (typeof ESPNEID!=="undefined"&&ESPNEID[id])||(ESPNL.g[id]&&ESPNL.g[id].eid)||null}
+function qbxState(g){const e=espnFresh()&&ESPNL.g[String(g.id)];return g.done?"post":e&&!e.done?"in":null}
+function qbxSlot(g){const st=qbxState(g);if(!st)return "";const id=String(g.id);const X=QBX[id];
+  if(!X||(st==="in"&&Date.now()-X.u>60e3)||(st==="post"&&!X.fin))qbxFetch(id);
+  return `<div class="qbx" data-qbx="${esc(id)}">${X?qbxHtml(g,X.j):qbxFallback(g)}</div>`}
+function qbxFallback(g){const f=g.final||{};const e=espnFresh()&&ESPNL.g[String(g.id)];const as=e?e.as:f.ap,hs=e?e.hs:f.hp;
+  return `<div class="qbhd"><b>${g.done?"Final":"Live"}: ${esc(g.a)} ${as??""} · ${esc(g.h)} ${hs??""}</b><span class="mxk">${qbxEid(g)?"Loading box score…":"Box score not available yet"}</span></div>${qbxRes(g,as,hs)}`}
+async function qbxFetch(id){if(QBXF[id])return;const g=findGame(id)||allGames().find(x=>String(x.id)===id);if(!g)return;const eid=qbxEid(g);if(!eid)return;QBXF[id]=1;
+  try{const r=await fetch("https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event="+eid+"&_="+Math.floor(Date.now()/30000),{cache:"no-store"});if(!r.ok)return;const j=await r.json();
+    const t=j.header&&j.header.competitions&&j.header.competitions[0].status.type;QBX[id]={u:Date.now(),j,fin:!!(t&&t.state==="post")};
+    const g2=findGame(id)||g;document.querySelectorAll(`.qbx[data-qbx="${CSS.escape(id)}"]`).forEach(el=>{el.innerHTML=qbxHtml(g2,j)})}catch(e){}finally{QBXF[id]=0}}
+function qbxRes(g,as,hs){if(as==null||hs==null||as===""||hs==="")return "";as=+as;hs=+hs;const out=[];const fin=!!g.done;
+  if(g.pick&&g.line!=null&&g.tier&&g.tier!=="Pass"){const pm=g.pick===g.a?as-hs:g.pick===g.h?hs-as:null;if(pm!=null){const c=pm+(+g.line);
+    out.push(`<span class="${fin?(c>0?"ok":c<0?"bad":""):""}">${esc(g.tier)}: ${esc(g.pick)} ${ln(g.line)} · ${fin?(c>0?"Won":c<0?"Lost":"Push"):(c>0?"covering":c<0?"not covering":"on the number")}</span>`)}}
+  if(g.tot&&g.tot.tier&&g.tot.tier!=="Pass"&&g.tot.line!=null){const o=/^o/i.test(g.tot.side||"");const d=(as+hs)-(+g.tot.line);const c=o?d:-d;
+    out.push(`<span class="${fin?(c>0?"ok":c<0?"bad":""):""}">${esc(g.tot.tier)}: ${esc(g.tot.side||"")} ${g.tot.line} · ${fin?(c>0?"Won":c<0?"Lost":"Push"):(c>0?"on pace":"behind")}</span>`)}
+  if(fin&&g.model!=null){const m=as-hs;const miss=Math.abs(m-g.model);out.push(`<span>LFTG line ${esc(favTxt(g,g.model))} · off by ${hfv(miss)}</span>`)}
+  if(fin&&g.mkt!=null){const m=as-hs;const fav=g.mkt>0?g.a:g.h;const c=g.mkt>0?m-g.mkt:(hs-as)+g.mkt;if(Math.round(Math.abs(g.mkt)*2))out.push(`<span>${esc(T(fav).abbr||fav)} ${c>0?"covered":c<0?"didn't cover":"pushed"} the market (${esc(favTxt(g,g.mkt))})</span>`)}
+  return out.length?`<div class="qbres">${out.join("")}</div>`:""}
+function qbxHtml(g,j){try{const id=String(g.id);const S2=bxSide(g,j);const c=S2.c;if(!c)return qbxFallback(g);const t=c.status.type;const live=t.state==="in";
+  const A=S2.o[g.a]||{},H=S2.o[g.h]||{};const as=A.score,hs=H.score;
+  const stt=t.state==="post"?"Final"+(/OT/.test(t.shortDetail||"")?" (OT)":""):(t.shortDetail||t.detail||"");
+  const ls=x=>(x.linescores||[]).map(q=>q.displayValue??q.value);const la=ls(A),lh=ls(H);const nq=Math.max(la.length,lh.length,4);
+  const qh=Array.from({length:nq},(_,i)=>`<th class="num">${i<4?i+1:"OT"+(nq>5?i-3:"")}</th>`).join("");
+  const line=`<div class="tablebox"><table class="bxtab"><thead><tr><th></th>${qh}<th class="num">T</th></tr></thead><tbody>${[[g.a,la,as],[g.h,lh,hs]].map(([n,L,sc])=>`<tr><td>${badge(n)} <b>${esc(T(n).abbr)}</b></td>${Array.from({length:nq},(_,i)=>`<td class="num">${esc(String(L[i]??"–"))}</td>`).join("")}<td class="num"><b>${esc(String(sc??""))}</b></td></tr>`).join("")}</tbody></table></div>`;
+  const bx=j.boxscore||{};const R=espnRev()||{};const tn=(tt,ha)=>R[String(tt.team.id)]||(ha==="home"?g.h:g.a);const TS={};for(const tt of bx.teams||[])TS[tn(tt,tt.homeAway)]=tt.statistics||[];
+  const gv=(n,k)=>{const x=(TS[n]||[]).find(y=>y.name===k);return x?x.displayValue:"—"};
+  const KS=[["totalYards","Total yards"],["netPassingYards","Passing"],["rushingYards","Rushing"],["yardsPerPlay","Yards per play"],["firstDowns","First downs"],["thirdDownEff","3rd down"],["turnovers","Turnovers"],["possessionTime","Possession"]].filter(([k])=>gv(g.a,k)!=="—"||gv(g.h,k)!=="—");
+  const team=KS.length?`<div class="tablebox" style="margin-top:8px"><table class="bxtab"><thead><tr><th></th><th class="num">${esc(T(g.a).abbr)}</th><th class="num">${esc(T(g.h).abbr)}</th></tr></thead><tbody>${KS.map(([k,l])=>`<tr><td>${l}</td><td class="num">${esc(String(gv(g.a,k)))}</td><td class="num">${esc(String(gv(g.h,k)))}</td></tr>`).join("")}</tbody></table></div>`:"";
+  const PL={};for(const tt of bx.players||[]){const ha=tt.homeAway||((bx.teams||[]).find(x=>x.team.id===tt.team.id)||{}).homeAway;PL[tn(tt,ha)]=tt.statistics||[]}
+  const lead=(n)=>{const out=[];for(const [k,lab] of [["passing","Pass"],["rushing","Rush"],["receiving","Rec"]]){const C=(PL[n]||[]).find(x=>x.name===k);const a=C&&(C.athletes||[])[0];if(!a)continue;const L=C.labels||[],v=a.stats||[],ix=x=>L.indexOf(x);const nm=esc((a.athlete&&(a.athlete.shortName||a.athlete.displayName))||"");
+      const td=+v[ix("TD")]?`, ${v[ix("TD")]} TD`:"";let s="";
+      if(k==="passing")s=`${v[ix("C/ATT")]||""}, ${v[ix("YDS")]} yds${td}${+v[ix("INT")]?`, ${v[ix("INT")]} INT`:""}`;
+      else if(k==="rushing")s=`${v[ix("CAR")]} car, ${v[ix("YDS")]} yds${td}`;else s=`${v[ix("REC")]} rec, ${v[ix("YDS")]} yds${td}`;
+      out.push(`<div><span class="mxk">${lab}</span> <b>${nm}</b> ${esc(s)}</div>`)}
+    return out.length?`<div><div class="mxtn" style="margin-bottom:2px">${badge(n)}<b>${esc(T(n).abbr)} leaders</b></div>${out.join("")}</div>`:""};
+  const ld=lead(g.a)+lead(g.h);
+  let exc="";try{const W=wpSeries(g,j);if(W&&W.pts.length>2)exc=`<span class="mxk">Excitement <b>${W.exc.toFixed(1)}</b> · ${excLabel(W.exc)}</span>`}catch(e){}
+  return `<div class="qbhd"><b>${live?'<span class="livechip">LIVE</span> ':""}${esc(stt)}</b>${exc}</div>${line}${qbxRes(g,as,hs)}${team}${ld?`<div class="qbld">${ld}</div>`:""}
+   <div class="mxact" style="margin-top:8px"><button type="button" class="btn" data-tkid="${esc(id)}">Full box score →</button></div><div class="mxk" style="margin-top:4px">Box score from ESPN${live?" · updates about every minute":""}.</div>`}catch(e){return qbxFallback(g)}}
+/* keep open live drop-downs fresh */
+setInterval(()=>{if(document.hidden)return;document.querySelectorAll("details.mxdd[open] .qbx[data-qbx]").forEach(el=>{const id=el.dataset.qbx;const g=findGame(id);if(!g)return;const st=qbxState(g);const X=QBX[id];if(st==="in"&&(!X||Date.now()-X.u>60e3))qbxFetch(id);else if(st==="post"&&(!X||!X.fin))qbxFetch(id)})},20e3);
 function lvFeedInit(){const v=$("v-live");if(!v)return;
   v.addEventListener("click",e=>{const b=e.target.closest("[data-lvpick]");if(b){LV.gid=b.dataset.lvpick;renderLive();$("lvCalc").scrollIntoView({behavior:"smooth",block:"start"});return}
     const a=e.target.closest("[data-lvauto]");if(a){const s=lvState(LV.gid);s.auto=true;$("lvCalc").dataset.gid="";renderLive()}});
