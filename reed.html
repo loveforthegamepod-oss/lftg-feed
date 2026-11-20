@@ -457,8 +457,8 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   <div id="loadmsg" class="status">Loading the latest model data…</div>
 
   <section class="view" id="v-bets">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn primary" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
-    <div class="welcome" id="welcome" hidden><button class="wx" id="welX" type="button" aria-label="Dismiss">×</button><b class="wt">Welcome to The Reed Option</b><p class="small" style="margin:0 0 10px;color:#d6f5e3">Our college football model projects every FBS game, rates all 138 teams, and grades every pick in public. Start here:</p><div class="wl"><a href="#bets">Keepers<span>This week's picks + confidence</span></a><a href="#board">The board<span>Every game, by kickoff</span></a><a href="#meter">Knap Meter<span>Who's on upset alert</span></a><a href="#ratings">Knapper Ratings<span>All 138 FBS teams</span></a><a href="#record">The record<span>Every pick, graded</span></a></div></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn primary" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="welcome" id="welcome" hidden><button class="wx" id="welX" type="button" aria-label="Dismiss">×</button><b class="wt">Welcome to The Reed Option</b><p class="small" style="margin:0 0 10px;color:#d6f5e3">Our college football model projects every FBS game, rates all 138 teams, and grades every pick in public. Start here:</p><div class="wl"><a href="#bets">Keepers<span>This week's picks + confidence</span></a><a href="#board">The board<span>Every game, by kickoff</span></a><a href="#meter">Upset Read<span>Who's on upset alert</span></a><a href="#ratings">Knapper Ratings<span>All 138 FBS teams</span></a><a href="#record">The record<span>Every pick, graded</span></a></div></div>
     <h1>This week's Keepers</h1>
     <p class="muted small" id="betsSub"></p>
     <div class="tiles" id="tiles"></div>
@@ -484,7 +484,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   </section>
 
   <section class="view" id="v-props">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn primary" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn primary" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
     <h1 id="ppTitle">Prop reads</h1>
     <p class="muted small" id="ppSub">Loading projections…</p>
     <div class="tiles" id="ppTiles"></div>
@@ -504,7 +504,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   </section>
 
   <section class="view" id="v-parlays">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn primary" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn primary" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
     <h1>The Triple Option</h1>
     <p class="muted small">Built from this week's index picks. Every leg uses the hit rate its pick type earned in the 2021–26 backtest (★★★ 57%, ★★ 54%, ★ 48–50%). A parlay is only +EV if its legs are: good legs multiply the edge, weak legs multiply the loss. Each card shows the hit chance, the <b>fair odds</b> (what it's really worth) and the payout at standard −110 prices. <b>Only bet a parlay if your book pays at least the fair odds.</b></p>
     <div class="tiles" id="plTiles"></div>
@@ -522,7 +522,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 
 
   <section class="view" id="v-propparlays">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn primary" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn primary" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
     <h1>Player prop parlays</h1>
     <p class="muted small" id="xpSub"></p>
     <div class="tiles" id="xpTiles"></div>
@@ -573,7 +573,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 
 
   <section class="view" id="v-pickem">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn primary" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn primary" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
     <h1>Beat the Reed</h1>
     <p class="muted small" id="pkSub"></p>
     <div class="tiles" id="pkTiles"></div>
@@ -600,7 +600,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 
 
   <section class="view" id="v-live">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn primary" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn primary" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
     <h1>Live betting</h1>
     <p class="muted small">Type in the score, clock and your book's live line. The index updates its pregame number for the score and time left, starts from the pregame closing line (frozen at kickoff) plus 30% of the index's disagreement on the side and 15% on the total, adjusts for the score, the time left and who has the ball using patterns from 6,400+ games drive by drive (scoring pace so far barely predicts the rest; big leads shrink a little; scoring is back-loaded; totals have a long upper tail, so overs are watch-only), and tells you whether the live number is worth it. Momentum by itself isn't a reason to bet: the calls look for spots where the live line has moved further than the game state justifies.</p>
     <h2 style="margin-top:6px">Live board</h2>
@@ -625,7 +625,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 
 
   <section class="view" id="v-totals">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn primary" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn primary" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
     <h1>Totals board</h1>
     <p class="muted small" id="toSub"></p>
     <div class="tiles" id="toTiles"></div>
@@ -641,7 +641,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 
 
   <section class="view" id="v-lines">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn primary" href="#lines">Line movement</a></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn primary" href="#lines">Line movement</a></div>
     <h1>Live lines &amp; line movement</h1>
     <p class="muted small" id="llSub"></p>
     <details class="card" style="padding:12px 14px;margin:8px 0"><summary><b>How the model measures a moving line</b></summary>
@@ -659,8 +659,8 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   </section>
 
   <section class="view" id="v-meter">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn primary" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
-    <div class="mtHead"><h1 id="mtTitle">Knap Time Meter 🚨</h1><span class="mtFrom" id="mtFrom" hidden></span><span class="mtStat" id="mtStat"></span></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn" href="#windows">By window</a><a class="btn primary" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="mtHead"><h1 id="mtTitle">Upset Read Meter 🚨</h1><span class="mtFrom" id="mtFrom" hidden></span><span class="mtStat" id="mtStat"></span></div>
     <p class="muted small">Every game on the board, placed by the underdog's chance to win outright on the Reed line (50% market + 50% index, σ 15.5; 13 from Week 12 on, when favorites have proven safer). It rebuilds itself from each new week's board. <span class="own">Drag any team block to a different row or a different spot in a row, like a tier list (works with a mouse or a finger). Tapping a block opens a quick tier menu. Your moves and order save for that week only, and the graphic uses your order. </span>Near coin flips land in the top row, since either side can win; a game with no betting line yet is placed on the index line.</p>
     <div class="controls" role="group" aria-label="Meter options"><label class="small" for="mtF">Favorites</label><select id="mtF"><option value="all">All games</option><option value="cfp">CFP Top 25 favorites</option><option value="p4">Power-conference favorites</option></select><label class="small" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="mtDone"> Show finished games</label><button class="btn" id="mtReset" type="button">Reset to the model</button><a class="btn" href="#graphics" id="mtGfx">Make the graphic</a></div>
     <div class="mtBoard" id="mtBoard"></div>
@@ -668,7 +668,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
   </section>
 
   <section class="view" id="v-windows">
-    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn primary" href="#windows">By window</a><a class="btn" href="#meter">Knap Meter</a><a class="btn" href="#lines">Line movement</a></div>
+    <div class="controls" role="group" aria-label="Bets views"><a class="btn" href="#bets">Keepers</a><a class="btn" href="#parlays">Triple Option</a><a class="btn" href="#props">Prop reads</a><a class="btn" href="#propparlays">Prop parlays</a><a class="btn" href="#pickem">Beat the Reed</a><a class="btn" href="#live">Live</a><a class="btn" href="#totals">Totals</a><a class="btn primary" href="#windows">By window</a><a class="btn" href="#meter">Upset Read</a><a class="btn" href="#lines">Line movement</a></div>
     <h1>Plays by window</h1>
     <p class="muted small" id="wnSub"></p>
     <div class="controls" role="group" aria-label="Window options" id="wnF">
@@ -941,7 +941,7 @@ function upCard(g){const u=g.ups,t=T(u.dog);return `<article class="card" data-g
 function ddLine(g,P){if(Math.abs(P)<0.25)return "PK";const fav=P<0?g.h:g.a;const v=Math.round(Math.abs(P)*2)/2;const nm=fav.length<=14?fav:(T(fav).abbr||fav);return nm+" −"+(v%1?v.toFixed(1):v)}
 function ddList(onlyAlerts){const L=games().filter(g=>isLive(g)&&g.mkt!=null&&Math.abs(+g.mkt)>=10&&g.model!=null).map(g=>{const ln=+g.mkt,dogHome=ln>0,sp=Math.abs(ln);const P=0.5*ln+0.5*(+g.model);const dm=dogHome?-P:P;const p=nPhi((dm+sp)/15.5);return {g,dog:dogHome?g.h:g.a,fav:dogHome?g.a:g.h,spread:sp,p,P,alert:p>=.55}}).sort((a,b)=>b.p-a.p);return onlyAlerts?L.filter(x=>x.alert):L}
 
-/* ===== Knap Time Meter: every open game, tiered by the underdog's outright chance on the Reed line ===== */
+/* ===== Upset Read Meter: every open game, tiered by the underdog's outright chance on the Reed line ===== */
 const MT=[{k:"UPSET INCOMING",e:"🚨",c:"#f08a8a",min:.40},{k:"EXTREME DANGER",e:"😳",c:"#f6c08c",min:.32},{k:"DON'T SLEEP",e:"😴",c:"#f9dc8c",min:.24},{k:"SLIGHTLY NERVOUS",e:"⚠️",c:"#fbf68a",min:.16},{k:"SHOULD HANDLE BUSINESS",e:"🙏",c:"#cdfb8a",min:.07},{k:"ABSOLUTE LOCK",e:"🔐",c:"#a3f78a",min:0}];
 const MTP4=new Set(["SEC","Big Ten","Big 12","ACC"]);const mtDat=s=>s&&(typeof s.data==="function"?s.data():s.data);let MTD=null,MTP=null,MTSUBW=null,mtPT=null;
 function mtKey(g){return String(g.id||g.a+"|"+g.h)}
@@ -972,7 +972,7 @@ function mtSnap(){if(typeof DB==="undefined"||!DB||!wk()||MTD===null||isViewer()
   if(ch&&(res||now-MTSNAPT>3*60000)){MTSNAPT=now;MTD.snap=sn;mtSave(true)}}
 function mtMove(id,t){MTD=MTD||{};MTD.ov=Object.assign({},MTD.ov||{});const x=mtAll().find(y=>y.id===id);if(t==null||(x&&x.auto===t))delete MTD.ov[id];else MTD.ov[id]=t;mtPend();renderMeter();mtSave();if(gsel==="meter")queueBuild(150)}
 function mtChip(x){const t=T(x.fav),d=T(x.dog);const pct=Math.round(x.u*100);const res=x.r?` · <span class="rz ${x.r==="U"?"u":"h"}">${x.r==="U"?"UPSET":"held"}</span>`:"";return `<button type="button" class="mtc${x.moved?" mv":""}${x.live?"":" fin"}" draggable="false" data-id="${esc(x.id)}" title="${esc(x.fav)} −${x.spread} vs ${esc(x.dog)} · ${pct}% upset chance${x.moved?" · moved by you (model: "+MT[x.auto].k+")":""}">${badge(x.fav)}<span><b>${esc(t.abbr)} ${x.nl?"(vs FCS)":x.spread?"−"+hfv(x.spread):"PK"}</b><small>vs ${esc(d.abbr)} · ${pct}%${res}</small></span></button>`}
-function renderMeter(){const B=$("mtBoard");if(!B)return;try{if(MTDG&&MTDG.on)return}catch(e){}mtSub();const w=wk();$("mtTitle").textContent=`Week ${w||"?"}: Knap Time Meter 🚨`;const fr=$("mtFrom");if(MTP&&MTP.snap&&Object.values(MTP.snap).some(e=>e&&e.r)){fr.hidden=false;fr.textContent="FROM WEEK "+(w-1)}else fr.hidden=true;
+function renderMeter(){const B=$("mtBoard");if(!B)return;try{if(MTDG&&MTDG.on)return}catch(e){}mtSub();const w=wk();$("mtTitle").textContent=`Week ${w||"?"}: Upset Read Meter 🚨`;const fr=$("mtFrom");if(MTP&&MTP.snap&&Object.values(MTP.snap).some(e=>e&&e.r)){fr.hidden=false;fr.textContent="FROM WEEK "+(w-1)}else fr.hidden=true;
   const L=mtList($("mtF").value,$("mtDone").checked);const mv=L.filter(x=>x.moved).length;
   B.innerHTML=MT.map((m,i)=>{const pl=mtPrevLine(i);return `<div class="mtRow"><div class="mtLab" style="background:${m.c}">${m.e} ${esc(m.k)}${pl?`<small>Last week: ${pl}</small>`:""}</div><div class="mtZone" data-t="${i}">${L.filter(x=>x.t===i).map(mtChip).join("")}</div></div>`}).join("");
   $("mtStat").textContent=`${L.length} games${mv?" · "+mv+" moved by you":""} · ${typeof DB!=="undefined"&&DB?(MTPEND?"Saving…":"Saved"):"Sign in to save"}`;
@@ -1664,7 +1664,7 @@ const GT=[
  {k:"slate",n:"Keepers slate",d:"All of this week's bets"},
  {k:"upset",n:"Knap Time",d:"7+ pt dogs with upset potential"},
   {k:"ddu",n:"Big Dog Reads",d:"10+ pt dogs ranked by cover chance"},
-  {k:"meter",n:"Knap Time Meter",d:"Every open game, tiered by upset chance"},
+  {k:"meter",n:"Upset Read Meter",d:"Every open game, tiered by upset chance"},
  {k:"matchup",n:"The Read",d:"Any game or predictor"},
  {k:"poll",n:"Knapper Poll",d:"Top 10 / 25 / 40"},
  {k:"conf",n:"Conference power",d:"Any conference"},
@@ -1705,7 +1705,7 @@ function liveBets(withLeans){const G=games().filter(isLive);const out=[];for(con
 const sel=(id,opts,v)=>`<select id="${id}">${opts.map(([val,lab])=>`<option value="${esc(val)}" ${String(val)===String(v)?"selected":""}>${esc(lab)}</option>`).join("")}</select>`;
 const chk=(id,v,lab)=>`<label class="ck"><input type="checkbox" id="${id}" ${v?"checked":""}> ${lab}</label>`;
 const txt=(id,v,ph)=>`<input type="text" id="${id}" value="${esc(v)}" placeholder="${esc(ph)}">`;
-function defTitle(){const g=curGame();return{redzone:"REDZONE CREW BEST BETS",bestbet:"THE KEEPER",slate:"THE KEEPERS",upset:"KNAP TIME",ddu:"BIG DOG READS",meter:"KNAP TIME METER",matchup:g&&g.hypo?"MATCHUP PREDICTOR":"THE READ",poll:"KNAPPER POLL",conf:((CONFS[gopt.conf]&&gopt.conf.length>12?CONFS[gopt.conf]:gopt.conf)||"").toUpperCase()+" POWER RANKINGS",cfp:"CFP BRACKETOLOGY",ratings:gopt.rtG6?"G6 KNAPPER RATINGS":"KNAPPER RATINGS",proj:"PLAYOFF ODDS",keys:"KEY READS",vegas:"REED VS VEGAS",recap:`WEEK ${gopt.rcWeek||wk()} RECAP`,trend:(gopt.trTeam||"").toUpperCase(),parlay:"TRIPLE OPTION",bottom25:"BOTTOM 25",props:"PROP READS",clv:"BEATING THE CLOSE",pickem:"BEAT THE REED",report:"MODEL REPORT CARD",totals:"TOTALS BOARD",locks:"PLAYOFF PICTURE",potw:(gopt.pwShow==="off"?"OFFENSE OF THE WEEK":gopt.pwShow==="def"?"DEFENSE OF THE WEEK":gopt.pwShow==="team"?"TEAM OF THE WEEK":"WEEK'S BEST"),propparlay:gsel==="propparlay"?(()=>{try{if(gopt.xpSet==="mine")return "MY PROP PARLAY";const x=xpSets().find(z=>z.k===gopt.xpSet);return x?x.name.toUpperCase().replace(/^THE /,""):"PROP PARLAY"}catch(e){return "PROP PARLAY"}})():""}[gsel]}
+function defTitle(){const g=curGame();return{redzone:"REDZONE CREW BEST BETS",bestbet:"THE KEEPER",slate:"THE KEEPERS",upset:"KNAP TIME",ddu:"BIG DOG READS",meter:"UPSET READ METER",matchup:g&&g.hypo?"MATCHUP PREDICTOR":"THE READ",poll:"KNAPPER POLL",conf:((CONFS[gopt.conf]&&gopt.conf.length>12?CONFS[gopt.conf]:gopt.conf)||"").toUpperCase()+" POWER RANKINGS",cfp:"CFP BRACKETOLOGY",ratings:gopt.rtG6?"G6 KNAPPER RATINGS":"KNAPPER RATINGS",proj:"PLAYOFF ODDS",keys:"KEY READS",vegas:"REED VS VEGAS",recap:`WEEK ${gopt.rcWeek||wk()} RECAP`,trend:(gopt.trTeam||"").toUpperCase(),parlay:"TRIPLE OPTION",bottom25:"BOTTOM 25",props:"PROP READS",clv:"BEATING THE CLOSE",pickem:"BEAT THE REED",report:"MODEL REPORT CARD",totals:"TOTALS BOARD",locks:"PLAYOFF PICTURE",potw:(gopt.pwShow==="off"?"OFFENSE OF THE WEEK":gopt.pwShow==="def"?"DEFENSE OF THE WEEK":gopt.pwShow==="team"?"TEAM OF THE WEEK":"WEEK'S BEST"),propparlay:gsel==="propparlay"?(()=>{try{if(gopt.xpSet==="mine")return "MY PROP PARLAY";const x=xpSets().find(z=>z.k===gopt.xpSet);return x?x.name.toUpperCase().replace(/^THE /,""):"PROP PARLAY"}catch(e){return "PROP PARLAY"}})():""}[gsel]}
 function autoKind(g){if(!g)return"spread";const sp=g.tier,to=g.tot&&g.tot.tier;if(sp==="Best Bet")return"spread";if(to==="Best Bet")return"total";if(sp==="Lean")return"spread";if(to==="Lean")return"total";return"spread"}
 const kindTag=(g,k)=>{const t=k==="spread"?g&&g.tier:g&&g.tot&&g.tot.tier;return t==="Best Bet"?" · best bet":t==="Lean"?" · lean":""};
 function curGame(){return gopt.game==="__hypo"?HYPO:allGames().find(x=>x.id===gopt.game)}
@@ -1721,7 +1721,7 @@ function renderGfxOpts(soft){if(soft&&document.activeElement&&($("gfxOpts").cont
     h=`<label for="go-game">Game</label><select id="go-game">${HYPO?`<option value="__hypo" ${gopt.game==="__hypo"?"selected":""}>Predictor: ${esc(HYPO.a)} vs ${esc(HYPO.h)}</option>`:""}${G.map(g=>`<option value="${esc(g.id)}" ${g.id===gopt.game?"selected":""}>${g.done?"(Final) ":""}${esc(g.a)} @ ${esc(g.h)}</option>`).join("")}</select>
      <div class="ckrow">${chk("go-rowMkt",gopt.rowMkt,"Market / site row")}${chk("go-rowLine",gopt.rowLine,"Reed line row")}${chk("go-rowPick",gopt.rowPick,"Model favorite + win %")+chk("go-rowCover",gopt.rowCover!==false,"Model ATS pick + cover %")}${chk("go-showRank",gopt.showRank,"Records & Reed rank")}${chk("go-showMood",gopt.showMood!==false,"Fan mood")}</div>
      <label for="go-note">Extra line (optional)</label>${txt("go-note",gopt.note,"e.g. Saturday 3:30 ET · CBS")}`}
-  else if(gsel==="meter"){const L=mtList(gopt.mtFilter||"all",false);h=`<p class="small muted">${L.length} open games on the meter (${L.filter(x=>x.t<=1).length} in the top two rows). Move teams between rows on Bets → Knap Meter.</p><label for="go-mtFilter">Favorites</label>${sel("go-mtFilter",[["all","All games"],["cfp","CFP Top 25 favorites"],["p4","Power-conference favorites"]],gopt.mtFilter||"all")}<div class="ckrow">${chk("go-mtOpp",gopt.mtOpp!==false,"Show the underdog's logo")}${chk("go-mtPct",gopt.mtPct,"Show upset chance %")}${chk("go-mtPrev",gopt.mtPrev!==false,"Show last week's results by row")}</div>`}
+  else if(gsel==="meter"){const L=mtList(gopt.mtFilter||"all",false);h=`<p class="small muted">${L.length} open games on the meter (${L.filter(x=>x.t<=1).length} in the top two rows). Move teams between rows on Bets → Upset Read.</p><label for="go-mtFilter">Favorites</label>${sel("go-mtFilter",[["all","All games"],["cfp","CFP Top 25 favorites"],["p4","Power-conference favorites"]],gopt.mtFilter||"all")}<div class="ckrow">${chk("go-mtOpp",gopt.mtOpp!==false,"Show the underdog's logo")}${chk("go-mtPct",gopt.mtPct,"Show upset chance %")}${chk("go-mtPrev",gopt.mtPrev!==false,"Show last week's results by row")}</div>`}
   else if(gsel==="ddu"){const n=ddList(gopt.ddOnly).length;h=`<p class="small muted">${n} underdog${n===1?"":"s"} getting 10+ (${ddList(true).length} at 55%+ to cover). Tracker: ${esc(ddRec())} ATS.</p><label for="go-ddCount">How many</label>${sel("go-ddCount",[[3,"Top 3"],[4,"Top 4"],[5,"Top 5"],[6,"Top 6"],[8,"Top 8"]],String(gopt.ddCount||4))}<div class="ckrow">${chk("go-ddOnly",gopt.ddOnly,"Alerts only (55%+ to cover)")}${chk("go-ddTrk",gopt.ddTrk!==false,"Show the ATS tracker record")}</div>`}
   else if(gsel==="upset"){const n=upsetList(gopt.upRadar).length;h=`<p class="small muted">${n} underdog${n===1?"":"s"} on the graphic.</p><div class="ckrow">${chk("go-upRadar",gopt.upRadar,"Include \"on the radar\" dogs (top 5)")}${chk("go-upWhy",gopt.upWhy,"Show the upset case")}</div>`}
   else if(gsel==="slate"){h=`<p class="small muted">${liveBets().length} Keepers on the board.</p><div class="ckrow">${chk("go-leans",gopt.leans,"Include leans")}${chk("go-showConf",gopt.showConf,"Confidence stars")}</div>`}
@@ -2042,7 +2042,7 @@ async function gSlate(c){const B=pgSlice(liveBets(gopt.leans));const {W}=dims();
   chrome(c,W,H);return{W,H}}
 
 async function gMeter(c){const {W,H}=dims();const WD=W>H*1.3;bg(c,W,H,[THEMES.midnight[1],THEMES.midnight[2]]);const L=mtList(gopt.mtFilter||"all",false);
-  if(GS.badge)obC(W-150,140,90);kicker(c,kick2(`WEEK ${wk()}`+(gopt.mtFilter==="cfp"?" · CFP TOP 25":gopt.mtFilter==="p4"?" · POWER CONFERENCES":"")),64,96);titleText(c,head("KNAP TIME METER"),64,WD?200:210,WD?110:118);await brandBadge(c,W-150,140,90);
+  if(GS.badge)obC(W-150,140,90);kicker(c,kick2(`WEEK ${wk()}`+(gopt.mtFilter==="cfp"?" · CFP TOP 25":gopt.mtFilter==="p4"?" · POWER CONFERENCES":"")),64,96);titleText(c,head("UPSET READ METER"),64,WD?200:210,WD?110:118);await brandBadge(c,W-150,140,90);
   const y0=WD?236:262,bot=WD?128:132,x0=WD?48:36,gap=WD?10:9;const lw=WD?300:(W<1100?236:250);const rh=(H-y0-bot-gap*(MT.length-1))/MT.length;const showPrev=gopt.mtPrev!==false;
   const anyPrev=showPrev&&MT.some((_,i)=>mtPrevLine(i));/* each label: try every way to break it into 1-3 lines (emoji inline or on its own line) and keep the layout with the biggest text */
   const lay=(m,hMax)=>{const w=m.k.split(" "),cands=[];const parts=(arr,n)=>{if(n===1)return [[arr.join(" ")]];const out=[];for(let k=1;k<=arr.length-n+1;k++)for(const r of parts(arr.slice(k),n-1))out.push([arr.slice(0,k).join(" ")].concat(r));return out};
