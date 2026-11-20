@@ -1,10 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-<rect width="512" height="512" rx="96" fill="#0b5c35"/>
-<rect x="18" y="18" width="476" height="476" rx="82" fill="none" stroke="#f5b800" stroke-width="10"/>
-<g stroke="#ffffff" stroke-opacity=".18" stroke-width="6"><line x1="60" y1="150" x2="452" y2="150"/><line x1="60" y1="362" x2="452" y2="362"/></g>
-<text x="256" y="128" text-anchor="middle" font-family="Arial Black,Arial,Helvetica,sans-serif" font-weight="900" font-size="54" fill="#f5b800" letter-spacing="10">THE</text>
-<text x="256" y="300" text-anchor="middle" font-family="Arial Black,Impact,Arial,Helvetica,sans-serif" font-weight="900" font-size="140" fill="#ffffff" textLength="400" lengthAdjust="spacingAndGlyphs">REED</text>
-<text x="256" y="420" text-anchor="middle" font-family="Arial Black,Arial,Helvetica,sans-serif" font-weight="900" font-size="66" fill="#ffffff" textLength="340" lengthAdjust="spacingAndGlyphs">OPTION</text>
-<path d="M150 455 Q256 395 362 455" fill="none" stroke="#f5b800" stroke-width="10" stroke-linecap="round"/>
-<path d="M352 440 L366 457 L345 465" fill="none" stroke="#f5b800" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<rect width="512" height="512" rx="104" fill="#0a5a34"/>
+<rect x="22" y="22" width="468" height="468" rx="86" fill="none" stroke="#f5b800" stroke-width="8"/>
+<path fill="#f5b800" transform="translate(196.01,132.00) scale(0.02477,-0.02477)" d="M40 1138H464V0H880V1138H1304V1490H40Z"/>
+<path fill="#f5b800" transform="translate(238.44,132.00) scale(0.02477,-0.02477)" d="M80 0H496V581H992V0H1408V1490H992V933H496V1490H80Z"/>
+<path fill="#f5b800" transform="translate(284.43,132.00) scale(0.02477,-0.02477)" d="M80 0H1234V352H496V574H1177V914H496V1138H1234V1490H80Z"/>
+<rect x="196" y="152" width="120" height="6" rx="3" fill="#f5b800"/>
+<path fill="#fff" transform="translate(64.50,300.00) scale(0.06876,-0.06876)" d="M80 0H496V466H682L905 0H1338L1065 556C1210 642 1292 785 1292 970C1292 1289 1069 1490 713 1490H80ZM496 788V1152H682C807 1152 886 1079 886 970C886 861 807 788 682 788Z"/>
+<path fill="#fff" transform="translate(161.04,300.00) scale(0.06876,-0.06876)" d="M80 0H1234V352H496V574H1177V914H496V1138H1234V1490H80Z"/>
+<path fill="#fff" transform="translate(252.84,300.00) scale(0.06876,-0.06876)" d="M80 0H1234V352H496V574H1177V914H496V1138H1234V1490H80Z"/>
+<path fill="#fff" transform="translate(344.63,300.00) scale(0.06876,-0.06876)" d="M662 0C1121 0 1416 292 1416 744C1416 1197 1116 1490 656 1490H80V0ZM496 344V1146H630C881 1146 996 1017 996 744C996 473 885 344 642 344Z"/>
+<path fill="#fff" transform="translate(89.45,392.00) scale(0.03876,-0.03876)" d="M764 -24C1169 -24 1488 247 1488 744C1488 1242 1169 1514 764 1514C357 1514 40 1242 40 744C40 250 357 -24 764 -24ZM764 336C569 336 460 487 460 744C460 1002 569 1154 764 1154C960 1154 1068 1002 1068 744C1068 487 960 336 764 336Z"/>
+<path fill="#fff" transform="translate(155.02,392.00) scale(0.03876,-0.03876)" d="M80 0H496V450H713C1069 450 1292 651 1292 970C1292 1289 1069 1490 713 1490H80ZM496 792V1148H682C807 1148 886 1079 886 970C886 861 807 792 682 792Z"/>
+<path fill="#fff" transform="translate(212.81,392.00) scale(0.03876,-0.03876)" d="M40 1138H464V0H880V1138H1304V1490H40Z"/>
+<path fill="#fff" transform="translate(271.25,392.00) scale(0.03876,-0.03876)" d="M496 1490H80V0H496Z"/>
+<path fill="#fff" transform="translate(299.92,392.00) scale(0.03876,-0.03876)" d="M764 -24C1169 -24 1488 247 1488 744C1488 1242 1169 1514 764 1514C357 1514 40 1242 40 744C40 250 357 -24 764 -24ZM764 336C569 336 460 487 460 744C460 1002 569 1154 764 1154C960 1154 1068 1002 1068 744C1068 487 960 336 764 336Z"/>
+<path fill="#fff" transform="translate(365.50,392.00) scale(0.03876,-0.03876)" d="M80 0H496V544C496 604 496 721 491 855C561 726 627 611 669 544L1008 0H1432V1490H1016V944C1016 873 1017 752 1021 631C963 738 902 849 867 905L504 1490H80Z"/>
+<path d="M170 438 Q256 404 334 432" fill="none" stroke="#f5b800" stroke-width="11" stroke-linecap="round"/>
+<path d="M318 418 L340 434 L316 448" fill="none" stroke="#f5b800" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
