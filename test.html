@@ -2107,9 +2107,9 @@ async function gMovers(c){const D=moversData();if(!D)throw new Error("Season pro
 async function gWP(c){const id=gopt.wpGame;const g=allGames().find(x=>String(x.id)===String(id));if(!g)throw new Error("Pick a game that has started.");const eid=ESPNEID[String(g.id)]||(ESPNL.g[String(g.id)]||{}).eid;if(!eid)throw new Error("No ESPN play-by-play for this game yet.");
   const j=await (await fetch("https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event="+eid,{cache:"no-store"})).json();const Wp=wpSeries(g,j);if(!Wp||Wp.pts.length<3)throw new Error("Not enough plays yet.");
   const {W,H}=dims();const ta=T(g.a),th=T(g.h);bg(c,W,H);if(GS.badge)obC(W-150,140,90);kicker(c,kick2(Wp.fin?"HOW IT UNFOLDED":"LIVE"),64,92);titleText(c,head("WIN PROBABILITY"),64,190,110);await brandBadge(c,W-150,140,90);
-  const L=Wp.pts[Wp.pts.length-1];const top=250;const ls=96;for(const [k,tn,sc] of [[0,g.a,L.as],[1,g.h,L.hs]]){const x=64+k*(W/2-32);c.save();rr(c,x,top,ls,ls,14);c.fillStyle=teamFill(c,tn,x,top,ls,ls);c.fill();c.clip();await logoOrMono(c,tn,x+ls/2,top+ls/2,ls*.8);c.restore();
-    c.font="56px Anton";c.fillStyle="#fff";c.fillText(`${T(tn).abbr} ${sc}`,x+ls+20,top+ls*.7)}
-  const cx=64,cy=top+ls+40,cw=W-128,chh=Math.max(260,H-cy-300);const X=t=>cx+cw*Math.min(1,t/Math.max(60,L.t)),Y=p=>cy+chh*(1-p);
+  const L=Wp.pts[Wp.pts.length-1];const top=240;const ls=Math.round(Math.min(96,H*.09));for(const [k,tn,sc] of [[0,g.a,L.as],[1,g.h,L.hs]]){const x=64+k*(W/2-32);c.save();rr(c,x,top,ls,ls,14);c.fillStyle=teamFill(c,tn,x,top,ls,ls);c.fill();c.clip();await logoOrMono(c,tn,x+ls/2,top+ls/2,ls*.8);c.restore();
+    c.font=Math.round(ls*.58)+"px Anton";c.fillStyle="#fff";c.fillText(`${T(tn).abbr} ${sc}`,x+ls+20,top+ls*.7)}
+  const cx=64,cy=top+ls+30,cw=W-128,chh=Math.max(150,H-cy-270);const X=t=>cx+cw*Math.min(1,t/Math.max(60,L.t)),Y=p=>cy+chh*(1-p);
   c.save();rr(c,cx,cy,cw,chh,16);c.fillStyle="rgba(0,0,0,.3)";c.fill();c.restore();
   c.strokeStyle="rgba(255,255,255,.12)";c.lineWidth=2;for(const t of [15,30,45]){c.beginPath();c.moveTo(X(t),cy);c.lineTo(X(t),cy+chh);c.stroke()}
   c.setLineDash([10,10]);c.strokeStyle="rgba(255,255,255,.35)";c.beginPath();c.moveTo(cx,Y(.5));c.lineTo(cx+cw,Y(.5));c.stroke();c.setLineDash([]);
@@ -2117,8 +2117,8 @@ async function gWP(c){const id=gopt.wpGame;const g=allGames().find(x=>String(x.i
   for(const [clipTop,col] of [[true,th.c1],[false,ta.c1]]){c.save();c.beginPath();clipTop?c.rect(cx,cy,cw,Y(.5)-cy):c.rect(cx,Y(.5),cw,cy+chh-Y(.5));c.clip();path();c.lineTo(X(L.t),Y(.5));c.lineTo(X(0),Y(.5));c.closePath();c.globalAlpha=.55;c.fillStyle=col;c.fill();c.restore()}
   path();c.strokeStyle=GS.gold==="#f5b800"?"#ffd34d":GS.gold;c.lineWidth=6;c.lineJoin="round";c.stroke();
   c.font="600 26px Oswald";c.fillStyle="rgba(255,255,255,.85)";c.fillText(`${th.abbr} 100%`,cx+16,cy+34);c.fillText(`${ta.abbr} 100%`,cx+16,cy+chh-16);["Q1","Q2","Q3","Q4"].forEach((q,i)=>{c.fillStyle="rgba(255,255,255,.5)";c.textAlign="center";c.fillText(q,X(7.5+15*i),cy+chh+34);c.textAlign="left"});
-  const by=cy+chh+60;c.font="64px Anton";c.fillStyle=GS.gold;c.fillText(Wp.exc.toFixed(1),64,by+56);const ew=c.measureText(Wp.exc.toFixed(1)).width;c.font="600 30px Oswald";c.fillStyle="#fff";c.fillText(`EXCITEMENT · ${excLabel(Wp.exc).toUpperCase()}`,64+ew+20,by+50);
-  if(Wp.big&&Wp.big.o&&Wp.big.o.txt){const t=`Biggest swing (${Math.round(Wp.big.d*100)} pts): ${Wp.big.o.txt}`;const fs=fit(c,t,"$px 'IBM Plex Sans'",24,W-128);c.font=fs+"px 'IBM Plex Sans'";c.fillStyle="rgba(255,255,255,.75)";c.fillText(t,64,by+100)}
+  const by=cy+chh+40;c.font="52px Anton";c.fillStyle=GS.gold;c.fillText(Wp.exc.toFixed(1),64,by+46);const ew=c.measureText(Wp.exc.toFixed(1)).width;c.font="600 28px Oswald";c.fillStyle="#fff";c.fillText(`EXCITEMENT · ${excLabel(Wp.exc).toUpperCase()}`,64+ew+18,by+42);
+  if(Wp.big&&Wp.big.o&&Wp.big.o.txt){const t=`Biggest swing (${Math.round(Wp.big.d*100)} pts): ${Wp.big.o.txt}`;const fs=fit(c,t,"$px 'IBM Plex Sans'",22,W-128);c.font=fs+"px 'IBM Plex Sans'";c.fillStyle="rgba(255,255,255,.75)";c.fillText(t,64,by+80)}
   chrome(c,W,H);return{W,H}}
 /* ---------- Sicko games of the week ---------- */
 const SKOPT=new Set(["Army","Navy","Air Force"]);
