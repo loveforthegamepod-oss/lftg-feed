@@ -391,6 +391,7 @@ tr.llflash td{animation:llFlash 2.4s ease-out}@keyframes llFlash{0%,25%{backgrou
 .lvtw{position:relative;display:flex;align-items:stretch;background:color-mix(in srgb,var(--bg,#120a2a) 88%,#000);border-bottom:1px solid rgba(255,255,255,.08)}
 .lvtw[hidden]{display:none}
 .rzlg{width:46px;height:46px;border-radius:8px;background:#fff center/contain no-repeat;box-shadow:0 2px 8px rgba(0,0,0,.4);flex:none}.rzlg.none{background:rgba(255,255,255,.06);font-size:10px;display:grid;place-items:center;color:var(--muted);box-shadow:none}
+.mukp .musn{font-size:12px;color:var(--ink,#e8eefc);opacity:.85;font-family:var(--mono,monospace);letter-spacing:-.01em}.mukp .mur .n{text-align:right;font-size:12.5px;line-height:1.35}
 .rzchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}.rzch{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:inherit;border-radius:999px;padding:6px 12px;font:600 13px var(--body);cursor:pointer}.rzch span{opacity:.6;margin-left:4px}.rzch.on{background:var(--steel,#1d3fd8);border-color:transparent;color:#fff}.rzadd{display:flex;gap:6px;margin-left:auto}.rzadd input{width:160px}.rzlist span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;padding:3px 4px 3px 6px}.rzlist .tb{transform:scale(.8)}.rzx{border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:50%;width:20px;height:20px;line-height:18px;padding:0;cursor:pointer;font-size:13px}.rzgames{display:grid;gap:6px;max-height:520px;overflow:auto;padding-right:4px}.rzg{border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 10px;background:rgba(255,255,255,.025)}.rzgh{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13.5px}.rzgb{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.rzpb{border:1px solid rgba(255,255,255,.2);background:transparent;color:inherit;border-radius:8px;padding:5px 10px;font:600 12.5px var(--body);cursor:pointer}.rzpb.on{background:#16a34a;border-color:#16a34a;color:#fff}
 .rzm{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 10px;margin:6px 0}.rzmh{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}.rzmb{margin-left:auto;display:flex;gap:6px}.rzmb .btn{padding:4px 10px;font-size:12px;cursor:pointer}.rzpk{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.rzpk span{font-size:11.5px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.07)}.rzpk span.bad{background:rgba(239,68,68,.22);color:#fecaca}
 .lvtw{position:sticky;top:var(--tktop,0px);z-index:4}
@@ -1135,7 +1136,7 @@ function openMatchup(id){const g=findGame(id);if(!g)return;location.hash="matchu
    ${moodVs(g)}
    <h3>Unit ranks (1 = best of ${N})</h3><div class="cmp">${cmp}</div>
    ${muBreakdown(g)}
-   <div id="muPP">${muPlayers(g)}</div>
+   <div id="muPP" data-gid="${esc(String(g.id))}">${muPlayers(g)}</div>
    ${qs?`<h3 style="margin-top:14px">Talking points</h3><ul class="tp">${qs}</ul>`:""}
    <div class="controls" style="margin-top:14px"><button class="btn" data-gfx="matchup" data-gid="${esc(g.id||"")}">Make matchup graphic</button>${!f&&(g.tier==="Best Bet"||(g.tot&&g.tot.tier==="Best Bet"))?`<button class="btn" data-gfx="bestbet" data-gid="${esc(g.id||"")}">Make best-bet graphic</button>`:""}</div></div></div>`;
   if(!PP&&!PPL){loadProps().then(()=>{const el=$("muPP");if(el&&!$("muDetail").hidden)el.innerHTML=muPlayers(g)})}
@@ -1420,12 +1421,20 @@ function muBreakdown(g){if(g.final)return "";const A=g.as||[],H=g.hs||[];const o
   const abs=[];for(const t of [g.a,g.h]){let L=[];try{L=injFor(t).L}catch(e){}const k=L.filter(p=>/^(QB|RB|WR|TE)$/.test(p.p||"")&&/^(Out|Doubtful)/.test(p.st)).slice(0,4);if(k.length)abs.push(`<b>${esc(T(t).abbr)} missing:</b> ${k.map(p=>`${esc(p.p)} ${esc(p.n)} (${esc(p.st)})`).join(", ")}`)}
   out.push(...abs);if(!out.length)return "";
   return `<h3 style="margin-top:14px">Matchup breakdown</h3><ul class="tp">${out.map(x=>`<li>${x}</li>`).join("")}</ul>`}
-function muPlayers(g){if(g.final)return "";if(!PP)return PPL?"":`<p class="small muted" style="margin-top:12px">Loading key players…</p>`;
-  const gi=PP.g.findIndex(x=>String(x[0])===String(g.id));if(gi<0)return `<p class="small muted" style="margin-top:12px">No player projections for this game this week.</p>`;
-  const P=ppPlayers().filter(x=>x.gi===gi);const mk1=x=>x.pos==="QB"?"py":x.pos==="RB"?"ry":"recy";
+function muPlayers(g){if(g.final)return "";if(!PP&&!PPL)return `<p class="small muted" style="margin-top:12px">Loading key players…</p>`;
+  if(!D2||D2.loading){d2Load();clearTimeout(muPlayers._t);muPlayers._t=setTimeout(function w(){if(D2&&D2.loading){muPlayers._t=setTimeout(w,400);return}const el=$("muPP");if(el&&!$("muDetail").hidden&&el.dataset.gid===String(g.id))el.innerHTML=muPlayers(g)},400)}
+  const gi=PP&&PP.g?PP.g.findIndex(x=>String(x[0])===String(g.id)):-1;
+  const P=gi>=0?ppPlayers().filter(x=>x.gi===gi):[];const mk1=x=>x.pos==="QB"?"py":x.pos==="RB"?"ry":"recy";
   const avg=a=>a&&a.length?Math.round(a.reduce((s,v)=>s+v,0)/a.length):null;
-  const side=t=>{const L=P.filter(x=>x.team===t&&!(x.inj&&/^Out/.test(x.inj)));const pick=[...L.filter(x=>x.pos==="QB").slice(0,1),...L.filter(x=>x.pos==="RB").slice(0,1),...L.filter(x=>x.pos!=="QB"&&x.pos!=="RB").slice(0,2)];
-    return `<div class="mukp"><div class="k">${badge(t)} ${esc(t)}</div>${pick.map(x=>{const mk=mk1(x),v=ppAdj(mk,x.m[mk]),l=x.l5[mk];return `<div class="r"><span><b>${esc(x.name)}</b> <span class="muted">${x.pos}</span>${x.inj?` <span class="pill p-pass">${esc(x.inj)}</span>`:""}</span><span class="n">${ppFmt(mk,v)} ${PMK[mk][0].toLowerCase()}${x.m.atd!=null?` · ${Math.round(x.m.atd*100)}% TD`:""}${l&&l.length?`<br><span class="muted">L${l.length} avg ${avg(l)}</span>`:""}</span></div>`}).join("")||`<div class="muted small">No projections.</div>`}</div>`};
+  const side=t=>{const X=D2&&D2.teams?(()=>{try{return d2Team(t)}catch(e){return null}})():null;const ST=X&&X.ST&&X.ST.p?X.ST.p:((()=>{try{const q=d2St(t);return q&&q.p}catch(e){return null}})()||{});
+    const proj=P.filter(x=>x.team===t);const byN=new Map(proj.map(x=>[nk(x.name),x]));let pick=[];
+    if(X&&X.rows){const slot=k=>{const r=X.rows.find(r=>r.k===k);if(!r)return null;const p=r.s&&!r.s.out?r.s:(r.b&&!r.b.out?r.b:null);return p?{name:p.n,pos:D2LAB[k]||k,inj:p.st||null}:null};
+      const qb=slot("QB"),rb=slot("RB");const rec=["WR1","WR2","TE","WR3"].map(slot).filter(Boolean);rec.sort((a,b)=>(byN.has(nk(b.name))?1:0)-(byN.has(nk(a.name))?1:0));
+      pick=[qb,rb,...rec.slice(0,2)].filter(Boolean).map(p=>Object.assign(p,{x:byN.get(nk(p.name))||null}))}
+    if(!pick.length){const L=proj.filter(x=>!(x.inj&&/^Out/.test(x.inj)));pick=[...L.filter(x=>x.pos==="QB").slice(0,1),...L.filter(x=>x.pos==="RB").slice(0,1),...L.filter(x=>x.pos!=="QB"&&x.pos!=="RB").slice(0,2)].map(x=>({name:x.name,pos:x.pos,inj:x.inj,x}))}
+    return `<div class="mukp"><div class="k">${badge(t)} ${esc(t)}</div>${pick.map(p=>{const x=p.x;const sn=ST[nk(p.name)]||"";let pj="";if(x){const mk=mk1(x),v=ppAdj(mk,x.m[mk]),l=x.l5[mk];const sub=[x.m.atd!=null?`${Math.round(x.m.atd*100)}% TD`:"",l&&l.length?`L${l.length} avg ${avg(l)}`:""].filter(Boolean).join(" · ");pj=`<span class="muted">Proj</span> ${ppFmt(mk,v)} ${PMK[mk][0].toLowerCase()}${sub?`<br><span class="muted">${sub}</span>`:""}`}
+      return `<div class="r mur"><span><b>${esc(p.name)}</b> <span class="muted">${esc(p.pos)}</span>${p.inj?` <span class="pill p-pass">${esc(p.inj)}</span>`:""}${sn?`<br><span class="musn" title="Season totals">${esc(sn)}</span>`:""}</span><span class="n">${pj||`<span class="muted">—</span>`}</span></div>`}).join("")||`<div class="muted small">No player data yet.</div>`}${X&&X.ST&&X.ST.t&&X.ST.t.gp?`<div class="small muted" style="margin-top:4px">Season totals through ${X.ST.t.gp} games</div>`:""}</div>`};
+  if(!PP){return `<h3 style="margin-top:14px">Key players</h3><div class="mukps">${side(g.a)}${side(g.h)}</div><p class="small muted">Player projections aren't posted for this game yet.</p>`}
   let plays=[];for(const x of P)for(const mk in x.m){const b=ppBook(x,mk);if(!b)continue;const e=ppEval(x,mk,b[0],b[1],b[2]);if(e&&e.tier&&e.tier!=="Pass")plays.push({x,mk,b,e})}
   plays.sort((a,b)=>ppSc(b.e)-ppSc(a.e));const good=plays.filter(p=>p.e.tier==="Strong"||p.e.tier==="Lean").slice(0,6),bad=plays.filter(p=>p.e.tier==="Avoid");
   const fmtO=o=>o==null?"":(+o>0?"+"+o:String(o).replace("-","−"));
