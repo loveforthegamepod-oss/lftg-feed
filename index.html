@@ -2676,7 +2676,7 @@ async function build(quiet){if(!S.ratings&&!games().length){msg("Data is still l
   let cv;if(dims().wide&&FRAMED.has(gsel)){try{cv=await renderFramed(run);LASTB=null;LT={}}catch(err){LT={};msg(String(err&&err.message||err));return}}else try{LT={};const probe=document.createElement("canvas");probe.width=1920;probe.height=3200;const dim=await run(probe.getContext("2d"));LASTN=BOUNDS;LT=computeLayout(BOUNDS,dim.W,dim.H);cv=document.createElement("canvas");if(dims().wide&&!dims().native){cv.width=1920;cv.height=1080;const cx=cv.getContext("2d");BK=1920/dim.W;try{cx.setTransform(BK,0,0,BK,0,0);await run(cx)}finally{BK=1}LASTB={B:LASTN,W:dim.W,H:dim.H}}else{cv.width=dim.W;cv.height=dim.H;await run(cv.getContext("2d"));LASTB={B:BOUNDS,W:dim.W,H:dim.H}}LT={}}catch(err){LT={};msg(String(err&&err.message||err));return}
   let name=(gsel==="bestbet"||gsel==="matchup")&&g?`lftg-week-${wk()}-${gsel}-${T(g.a).abbr}-at-${T(g.h).abbr}`:`lftg-week-${wk()}-${gsel}${gsel==="conf"?"-"+(CONFS[gopt.conf]||gopt.conf):gsel==="poll"?"-top"+gopt.count:""}`;lastName=name.toLowerCase().replace(/[^a-z0-9-]+/g,"-")+".png";
   {const pb=$("pgBar");if(pb){pb.hidden=!(PGN>1);$("pgLbl").textContent=`Image ${PGI+1} of ${PGN}`;$("pgPrev").disabled=PGI<=0;$("pgNext").disabled=PGI>=PGN-1}}if(PGN>1)lastName=lastName.replace(/\.png$/,`-${PGI+1}-of-${PGN}.png`);
-  cv.toBlob(b=>{lastBlob=b;$("gfxImg").src=URL.createObjectURL(b);$("gfxPrev").hidden=false;$("gfxSave").hidden=false;$("gfxEdit").hidden=false;$("gfxImg").onload=()=>drawLy();if(quiet){msg(LYON?"Drag an element to move it. Everything else re-fits around it.":"Ready.");return}msg(DL?"Ready. Tap Save PNG, or press and hold the image to save it.":(SHAREF&&TOUCH)?"Ready. Tap Save to Photos, then \"Save Image\".":PUB?"Ready. Tap Save PNG, or right-click the image to save it.":"Ready. Press and hold (or right-click) the image to save it.")},"image/png");
+  cv.toBlob(b=>{lastBlob=b;$("gfxImg").src=URL.createObjectURL(b);$("gfxPrev").hidden=false;try{if(!quiet)setTimeout(renderPostKit,0)}catch(x){}$("gfxSave").hidden=false;$("gfxEdit").hidden=false;$("gfxImg").onload=()=>drawLy();if(quiet){msg(LYON?"Drag an element to move it. Everything else re-fits around it.":"Ready.");return}msg(DL?"Ready. Tap Save PNG, or press and hold the image to save it.":(SHAREF&&TOUCH)?"Ready. Tap Save to Photos, then \"Save Image\".":PUB?"Ready. Tap Save PNG, or right-click the image to save it.":"Ready. Press and hold (or right-click) the image to save it.")},"image/png");
   if(quiet)return;if(location.hash!=="#graphics")location.hash="graphics";setTimeout(()=>$("gfxPrev").scrollIntoView({behavior:"smooth",block:"start"}),50)}
 $("gfxBuild").addEventListener("click",()=>build());
 $("pgPrev").addEventListener("click",()=>{gopt.pgIdx=Math.max(0,(+gopt.pgIdx||0)-1);build(true)});
@@ -2755,6 +2755,54 @@ $("lyResetOne").addEventListener("click",()=>{const U=getU();delete U[LYSEL];sav
 $("lyReset").addEventListener("click",()=>{delete LY[lkey()];saveLY();relay()});
 const nudge=d=>{const U=getU();const u=U[LYSEL]||(U[LYSEL]={});u.dy=(u.dy||0)+d;if(LYSEL==="body")u.m=1;saveLY();relay()};$("lyNudge").addEventListener("click",()=>nudge(-10));$("lyNudgeD").addEventListener("click",()=>nudge(10));
 window.addEventListener("resize",()=>drawLy());
+
+
+/* ===== Post kit: unique X + Instagram captions for every graphic, with one-tap share to the apps ===== */
+let CAPV=0,CAPK="";
+const capHash=x=>{let h=0;for(const ch of String(x))h=(h*31+ch.charCodeAt(0))|0;return Math.abs(h)};
+const capPick=(arr,salt)=>arr[(capHash(salt)+CAPV)%arr.length];
+const BRANDNM=()=>(typeof REEDBRAND!=="undefined"&&REEDBRAND)?"The Reed Option":"the LFTG Performance Index";
+const tagT=t=>"#"+String(t).replace(/[^A-Za-z0-9]/g,"");
+function capData(){const W=wk();const out={lines:[],tags:[],hook:"",cta:""};const B=()=>liveBets();const lnS=g=>`${g.pick} ${ln(g.line)}`;const tl=g=>`${g.tot.side} ${g.tot.line}`;
+  const gm=()=>{try{return curGame()}catch(e){return null}};
+  switch(gsel){
+    case "slate":case "keepgive":case "optreads":{const L=gsel==="optreads"?games().filter(g=>isLive(g)&&g.tier==="Lean"):null;
+      if(gsel==="slate"){for(const b of B()){out.lines.push(b.kind==="spread"?lnS(b.g):`${b.g.a}/${b.g.h} ${tl(b.g)}`);out.tags.push(tagT(b.g.a),tagT(b.g.h))}}
+      else if(gsel==="keepgive"){for(const g of roGames(+gopt.roN||6,gopt.roBy||"gap")){const f=roFav(g);const cp=coverPick(g)||{team:f};out.lines.push(`${T(f).abbr} ${ln(roLn(g,f))}: ${cp.team===f?"KEEP":"GIVE"}`);out.tags.push(tagT(g.a),tagT(g.h))}}
+      else for(const g of L){out.lines.push(lnS(g))}
+      break}
+    case "bestbet":{const g=gm();if(g){out.lines.push(gopt.betkind==="total"&&g.tot?`${g.a}/${g.h} ${tl(g)}`:lnS(g));out.tags.push(tagT(g.a),tagT(g.h));out.edge=gopt.betkind==="total"&&g.tot?g.tot.edge:g.edge}break}
+    case "matchup":case "mesh":case "pullball":{const g=gsel==="matchup"?gm():(games().find(x=>String(x.id)===gopt.roGame)||roGames(1,"gap")[0]);if(g){const cp=coverPick(g);out.g=g;out.lines.push(`${g.a} ${g.n?"vs":"at"} ${g.h}`);out.lines.push(`Vegas: ${favTxt(g,g.mkt)} · Model: ${favTxt(g,g.model)}`);if(cp&&!cp.tie)out.lines.push(`The read: ${cp.team} ${ln(cp.line)} (${Math.round(cp.p*100)}% to cover)`);out.tags.push(tagT(g.a),tagT(g.h))}break}
+    case "upset":case "ddu":case "meter":case "pitchman":{let U=[];try{U=upsetList(true)}catch(e){}for(const g of U.slice(0,4)){const u=g.ups;out.lines.push(`${u.dog} +${u.spread}${u.ml?` (ML +${u.ml})`:""}: ${Math.round(u.idx)}% to win outright`);out.tags.push(tagT(u.dog))}break}
+    case "keys":case "speed":{const L=gsel==="keys"?kyList():roGames(5,gopt.roBy||"big");for(const g of L){const cp=coverPick(g);out.lines.push(`${T(g.a).abbr} ${g.n?"vs":"@"} ${T(g.h).abbr}${cp&&!cp.tie?`: ${T(cp.team).abbr} ${ln(cp.line)}`:""}`);out.tags.push(tagT(g.a),tagT(g.h))}break}
+    case "sicko":{for(const x of sickoList().slice(0,+gopt.skCount||8))out.lines.push(`${x.g.a} vs ${x.g.h}`);break}
+    case "triple":{for(const b of B().slice(0,2))out.lines.push(b.kind==="spread"?lnS(b.g):tl(b.g));break}
+    case "redzone":{try{for(const m of rzMembers())out.lines.push(`${m.name}: ${m.picks.map(p=>p.disp).join(", ")}`)}catch(e){}break}
+    case "recap":{const tb=((S.tracker&&S.tracker.bets)||[]).filter(b=>+b.wk===(+gopt.rcWeek||+W));const w=tb.filter(b=>b.result==="W").length,l=tb.filter(b=>b.result==="L").length;out.rec=`${w}-${l}`;break}
+    default:break}
+  out.tags=[...new Set(out.tags)].slice(0,6);return out}
+function capBuild(){const d=capData();const BR=BRANDNM();const title=(gopt.title||defTitle()||"").toString();const t=title.charAt(0)+title.slice(1).toLowerCase();const salt=gsel+"|"+wk()+"|"+(d.lines[0]||"");
+  const hooks={slate:["This week's plays are in.","The board has spoken.","Locked and loaded for Week "+wk()+".","Every edge the model found this week:"],keepgive:["Keep it or give it?","Favorites on the clock.","Rapid-fire reads:"],bestbet:["The best bet of the week.","Highest-confidence play on the board.","If we're playing one game, it's this one."],matchup:["Matchup breakdown:","Here's how the model sees it:","Tale of the tape:"],mesh:["The model and Vegas can't agree on this one.","Biggest split on the board:","Vegas says one thing. The numbers say another."],pullball:["Gut vs model. Who you rolling with?","Pulling the ball on this one."],upset:["Upset watch is ON.","Don't sleep on these dogs.","Trap game alert."],meter:["Favorites, be nervous.","Upset radar is lit up this week.","Who's on upset alert?"],pitchman:["Longshot season.","Dogs with bite:","Big plus-money looks:"],keys:["The games that matter this week:","Circle these on your calendar.","Week "+wk()+"'s must-watch slate:"],speed:["Five games. Five reads. Go.","Speed round:"],sicko:["For the sickos only.","No matter who's playing, we're watching.","Weeknight MACtion and everything in between."],triple:["Three legs. One ticket.","Parlay of the week:"],optreads:["Liked, not loved:","The leans that just missed the cut:"],redzone:["The crew's best bets are in.","Everybody's locks, one graphic."],recap:["Receipts.","How'd we do?","Week in review:"]};
+  const h=capPick(hooks[gsel]||[t+":"],salt);const L=d.lines.slice(0,8);
+  const ctasX=["Tail or fade? 👇","Who you got?","Agree or disagree?","Drop your picks below 👇"],ctasI=["Tail or fade? Drop your picks in the comments 👇","Save this for Saturday and tell us who you're riding with.","Agree with the model? Let us know below.","Share with the group chat that needs it."];
+  const base=["#CFB","#CollegeFootball","#CFBPicks"],extra=d.tags;
+  let x=[h,...L.map(z=>"• "+z),d.rec?`Week ${wk()}: ${d.rec}`:"",capPick(ctasX,salt+"x")].filter(Boolean).join("\n");const xt=" "+[...base.slice(0,2),...extra.slice(0,2)].join(" ");
+  while((x+xt).length>280&&L.length>1){L.pop();x=[h,...L.map(z=>"• "+z),"…",capPick(ctasX,salt+"x")].join("\n")}if((x+xt).length<=280)x+=xt;else x=x.slice(0,280);
+  const ig=[`${t} | Week ${wk()}`,"",h,"",...d.lines.map(z=>"🏈 "+z),d.rec?`\nRecord: ${d.rec}`:"","",`Numbers from ${BR}. For entertainment; bet responsibly (21+).`,"",capPick(ctasI,salt+"i"),"",[...base,"#CollegeFootballPicks","#SportsBetting",...extra].join(" ")].filter(z=>z!==null).join("\n").replace(/\n{3,}/g,"\n\n");
+  return {x,ig}}
+function renderPostKit(){let el=$("postKit");if(!el){el=document.createElement("div");el.id="postKit";el.className="card";el.style.cssText="padding:14px;margin:10px 0";$("gfxPrev").insertAdjacentElement("afterend",el)}const k=gsel+"|"+gopt.game+"|"+gopt.roGame;if(k!==CAPK){CAPK=k;CAPV=0}
+  let C;try{C=capBuild()}catch(e){el.hidden=true;return}el.hidden=false;
+  el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b>Post kit</b><button type="button" class="btn" id="pkNew">New captions ↻</button></div>
+   <label for="pkX" style="margin-top:8px">X / Twitter <span class="muted small" id="pkXn"></span></label><textarea id="pkX" rows="6" style="width:100%">${esc(C.x)}</textarea>
+   <div class="controls"><button type="button" class="btn primary" data-pkshare="x">Share to X</button><button type="button" class="btn" data-pkcopy="pkX">Copy</button></div>
+   <label for="pkI" style="margin-top:8px">Instagram</label><textarea id="pkI" rows="9" style="width:100%">${esc(C.ig)}</textarea>
+   <div class="controls"><button type="button" class="btn primary" data-pkshare="ig">Share to Instagram</button><button type="button" class="btn" data-pkcopy="pkI">Copy</button></div>
+   <p class="small muted">Each graphic gets its own caption from this week's numbers; tap New captions for a different version, and edit freely. On your phone, Share opens the share sheet with the image (pick X or Instagram); the caption is copied so you can paste it. On a computer, the image downloads and the caption is copied.</p>`;
+  const upd=()=>{const n=$("pkX").value.length;$("pkXn").textContent=`${n}/280`;$("pkXn").style.color=n>280?"#ff8a8a":""};upd();$("pkX").addEventListener("input",upd)}
+document.addEventListener("click",async e=>{const t=e.target;if(!t||!t.closest)return;if(t.id==="pkNew"){CAPV++;renderPostKit();return}
+  const cp=t.closest("[data-pkcopy]");if(cp){try{await navigator.clipboard.writeText($(cp.dataset.pkcopy).value);cp.textContent="Copied ✓";setTimeout(()=>cp.textContent="Copy",1500)}catch(x){$(cp.dataset.pkcopy).select()}return}
+  const sh=t.closest("[data-pkshare]");if(sh){const txt=$(sh.dataset.pkshare==="x"?"pkX":"pkI").value;try{await navigator.clipboard.writeText(txt)}catch(x){}
+    if(typeof lastBlob!=="undefined"&&lastBlob){const f=new File([lastBlob],`${gsel}-week${wk()}.png`,{type:"image/png"});if(SHAREF){try{await navigator.share({files:[f],text:txt});return}catch(x){if(x&&x.name==="AbortError")return}}dlBlob(lastBlob,f.name);if(sh.dataset.pkshare==="x")window.open("https://x.com/intent/post?text="+encodeURIComponent(txt),"_blank")}}});
 
 const SHAREF=(()=>{try{return !!(navigator.canShare&&navigator.share&&navigator.canShare({files:[new File([new Blob(["x"],{type:"image/png"})],"x.png",{type:"image/png"})]}))}catch(e){return false}})();
 const TOUCH=(()=>{try{return matchMedia("(pointer:coarse)").matches}catch(e){return false}})();
