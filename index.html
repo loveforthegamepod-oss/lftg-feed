@@ -3486,10 +3486,10 @@ async function espnPoll(){if(ESPNOK===false)return;const R=espnRev();if(!R)retur
     out[String(g.id)]={as,hs,q:c.status.period||1,clk:c.status.displayClock||"",half:/half/i.test(det)||st.name==="STATUS_HALFTIME",done,det,k:kt,eid:String(ev.id),sit:si&&!done?{dd:si.downDistanceText||si.shortDownDistanceText||"",pos:pn,rz:!!si.isRedZone,lp:si.lastPlay&&si.lastPlay.text||"",dn:+si.down||0,ds:+si.distance||0,pa:si.possession?(String(si.possession)===String(H.team.id)?H.team.abbreviation:String(si.possession)===String(A.team.id)?A.team.abbreviation:"")||"":""}:null}}
   ESPNL={u:Date.now(),g:out};espnRender()}
 function espnFresh(){return ESPNL.u&&Date.now()-ESPNL.u<12*60e3}
-function ipMerge(){const ip=LIVEL&&LIVEL.ip;if(!ip)return;const u=LIVEL.u?new Date(LIVEL.u).getTime():0;if(!u||Date.now()-u>25*60e3)return;if(!LVFEED)LVFEED={g:{}};if(!LVFEED.g)LVFEED.g={};
-  for(const id in ip){const v=ip[id];if(!v)continue;const F=LVFEED.g[id]||(LVFEED.g[id]={});if(v[0]!=null)F.sp={h:+v[0]};if(v[1]!=null)F.tot={pt:+v[1]};F.book="cons";F.nb=v[2];F.lu=v[3]*60000;F.bk=v[4]||null}LVFEED.lu=Math.max(LVFEED.lu||0,u)}
+function ipMerge(){const ip=LIVEL&&LIVEL.ip;if(!ip)return;const u=LIVEL.u?new Date(LIVEL.u).getTime():0;if(!u||Date.now()-u>15*60e3)return;if(!LVFEED)LVFEED={g:{}};if(!LVFEED.g)LVFEED.g={};
+  for(const id in ip){const v=ip[id];if(!v)continue;const F=LVFEED.g[id]||(LVFEED.g[id]={});const fb=F.bu?Date.parse(F.bu):0;if(F.book&&F.book!=="cons"&&fb&&fb>=v[3]*60000)continue;if(v[0]!=null)F.sp={h:+v[0]};if(v[1]!=null)F.tot={pt:+v[1]};F.book="cons";F.nb=v[2];F.lu=v[3]*60000;F.bk=v[4]||null}LVFEED.lu=Math.max(LVFEED.lu||0,u)}
 function lnUp(F){return F&&F.lu?Math.max(0,Math.round((Date.now()-F.lu)/60e3)):null}
-function bookTag(F){if(!F||!F.book)return "";if(F.book==="cons"){const m=lnUp(F);return `${F.nb||""}-book consensus${m!=null?`, ${m<1?"just now":m+" min ago"}`:""}`}return F.book==="draftkings"?"DK":"FD"}
+function bookTag(F){if(!F||!F.book)return "";if(F.book==="cons"){const m=lnUp(F);return `${F.nb||""}-book consensus${m!=null?`, ${m<1?"just now":m+" min ago"}`:""}`}const m=F.bu?Math.max(0,Math.round((Date.now()-Date.parse(F.bu))/60e3)):null;return (F.book==="draftkings"?"DK":"FD")+(m!=null?`, ${m<1?"just now":m+" min ago"}`:"")}
 function espnMerge(){ipMerge();if(!espnFresh())return;const E=ESPNL.g;if(!Object.keys(E).length)return;
   if(!LVFEED)LVFEED={g:{}};if(!LVFEED.g)LVFEED.g={};
   for(const id in E){const e=E[id];const F=LVFEED.g[id]||(LVFEED.g[id]={});Object.assign(F,{as:e.as,hs:e.hs,q:e.q,clk:e.clk,half:e.half,done:e.done,rt:1})}}
