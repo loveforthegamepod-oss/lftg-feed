@@ -1158,19 +1158,19 @@ async function renderArchive(w){const el=$("boardList");el.innerHTML=`<div class
   if(BW!==w)return;
   const q=$("boardQ").value.trim().toLowerCase();
   const LN={};for(const x of (A&&A.g)||[]){if(x[1]===w&&!x[2])LN[x[3]+"|"+x[4]]=x}
-  const docs={};for(const g of allGames()){docs[g.a+"|"+g.h]=g}
+  const docs={};for(const g of allGames()){(docs[g.a+"|"+g.h]=docs[g.a+"|"+g.h]||[]).push(g)}const docOf=(key,k)=>{const t=Date.parse(k);return (docs[key]||[]).find(x=>Math.abs(Date.parse(x.k)-t)<4*864e5)||null};
   const bets=((S.tracker&&S.tracker.bets)||[]).filter(b=>+b.wk===w);
   const cw=curWk();const fut=cw&&w>cw;
   let G=E.g.slice().sort((x,y)=>String(x.k).localeCompare(String(y.k))||x.a.localeCompare(y.a));if(q)G=G.filter(g=>(g.a+" "+g.h).toLowerCase().includes(q));
   const dayOf=k=>{const t=Date.parse(k);return isNaN(t)?"Time TBA":new Date(t).toLocaleDateString("en-US",{timeZone:"America/New_York",weekday:"long",month:"short",day:"numeric"})};
   let lastDay=null;const nb={w:0,l:0,p:0};
-  const html=G.map(g=>{const key=g.a+"|"+g.h,ln=LN[key],d=docs[key];const dy=dayOf(g.k);let hd="";if(dy!==lastDay){hd=`<div class="bdDay">${esc(dy)}</div>`;lastDay=dy}
+  const html=G.map(g=>{const key=g.a+"|"+g.h,ln=LN[key],d=docOf(key,g.k);const dy=dayOf(g.k);let hd="";if(dy!==lastDay){hd=`<div class="bdDay">${esc(dy)}</div>`;lastDay=dy}
     const ico=`<span class="ico">${badge(g.a)}${badge(g.h)}</span>`;
     const tm=(()=>{const t=Date.parse(g.k);if(isNaN(t))return "";const s2=new Date(t).toLocaleTimeString("en-US",{timeZone:"America/New_York",hour:"numeric",minute:"2-digit"});return /^12:00 AM/.test(s2)?"Time TBA":s2+" ET"})();
     let mid,right,meta=[];
     if(g.state==="pre"){mid=`${esc(g.a)} @ ${esc(g.h)}${g.n?' <span class="muted small">(neutral)</span>':""}`;right=`<span class="muted">${esc(tm)}</span>`}
     else{mid=`${esc(g.a)} <span class="score">${g.ap??""}</span> @ ${esc(g.h)} <span class="score">${g.hp??""}</span>`;right=g.done?'<span class="pill p-final">Final</span>':`<span class="pill p-live">${esc(g.det||"Live")}</span>`}
-    const mk=ln&&ln[7]!=null?`Close: ${esc(wkHomeLine(g.a,g.h,ln[7]))}${ln[9]!=null?" · O/U "+ln[9]:""}`:(g.od&&g.od.d?`${esc(g.od.bk||"Line")}: ${esc(g.od.d)}${g.od.ou!=null?" · O/U "+g.od.ou:""}`:"");if(mk)meta.push(mk);
+    const mk=ln&&ln[7]!=null?`Close: ${esc(wkHomeLine(g.a,g.h,ln[7]))}${ln[9]!=null?" · O/U "+(Math.round(ln[9]*2)/2):""}`:(g.od&&g.od.d?`${esc(g.od.bk||"Line")}: ${esc(g.od.d)}${g.od.ou!=null?" · O/U "+g.od.ou:""}`:"");if(mk)meta.push(mk);
     if(d&&d.model!=null)meta.push(`Index: ${esc(wkFav(g.a,g.h,d.model))}${d.tot&&d.tot.model!=null?" · total "+d.tot.model:""}`);
     else{const ra=wkRating(g.a),rh=wkRating(g.h);if(ra!=null&&rh!=null&&g.state==="pre")meta.push(`Projection: ${esc(wkFav(g.a,g.h,ra-rh-(g.n?0:2.5)))}`)}
     if(d&&g.state==="pre"&&!fut){if(d.tier&&d.tier!=="Pass")meta.push(`${esc(d.tier)}: ${esc(d.pick)} ${ln2(d.line)}`);if(d.tot&&d.tot.tier&&d.tot.tier!=="Pass")meta.push(`${esc(d.tot.tier)}: ${esc(d.tot.side)} ${d.tot.line}`)}
@@ -1194,7 +1194,7 @@ async function wkBox(eid,box){if(!box.hidden){box.hidden=true;return}box.hidden=
     h+=`<div class="muted small" style="margin-top:6px">Source: ESPN</div>`;
     if(comp.status&&comp.status.type&&comp.status.type.completed)BXC[eid]=h;box.innerHTML=h}catch(e){box.innerHTML='<span class="muted">Box score not available right now.</span>'}}
 function wkNavSync(){const cw=curWk();const w=BW??cw;$("wkLbl").textContent=w?(BW==null||BW===cw?`Week ${w} · this week`:`Week ${w}`):"This week";$("wkPrev").disabled=!w||w<=1;$("wkNext").disabled=!w||w>=16;$("wkNow").hidden=BW==null||BW===cw;
-  document.querySelectorAll("#v-board .controls").forEach(c=>c.hidden=!(BW==null||BW===cw))}
+  document.querySelectorAll("#v-board .controls").forEach(c=>c.style.display=(BW==null||BW===cw)?"":"none")}
 function wkGo(w){const cw=curWk();BW=(w===cw)?null:w;wkNavSync();renderBoard()}
 try{$("wkPrev").addEventListener("click",()=>{const w=(BW??curWk());if(w>1)wkGo(w-1)});$("wkNext").addEventListener("click",()=>{const w=(BW??curWk());if(w<16)wkGo(w+1)});$("wkNow").addEventListener("click",()=>wkGo(curWk()));
   $("boardList").addEventListener("click",e=>{const r=e.target.closest(".row.arc");if(!r)return;const b=$("bx_"+r.dataset.eid);if(b)wkBox(r.dataset.eid,b)})}catch(e){}
